@@ -11,23 +11,15 @@
  import React from 'react';
  import {
    SafeAreaView,
-   ScrollView,
-   StatusBar,
    Text,
-   View,
  } from 'react-native';
-
- import tw from './tailwind'
+import Router from './Router';
 
  const App = () => {
    return (
      <SafeAreaView> 
-       <StatusBar/>
-       <ScrollView contentInsetAdjustmentBehavior="automatic">
-         <View>
-         <Text style={tw`text-pink-400`}>Hello world</Text>
-         </View>
-       </ScrollView>
+     <Router />
+     <Text>Foobar</Text>
      </SafeAreaView>
    );
  };
