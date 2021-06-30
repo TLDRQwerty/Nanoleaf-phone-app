@@ -13,28 +13,17 @@
    SafeAreaView,
    ScrollView,
    StatusBar,
-   StyleSheet,
    Text,
-   useColorScheme,
    View,
  } from 'react-native';
 
- import {
-   Colors,
-   DebugInstructions,
-   Header,
-   LearnMoreLinks,
-   ReloadInstructions,
- } from 'react-native/Libraries/NewAppScreen';
-
- import tw from './lib/tailwind'
+ import tw from './tailwind'
 
  const App = () => {
    return (
      <SafeAreaView> 
        <StatusBar/>
        <ScrollView contentInsetAdjustmentBehavior="automatic">
-         <Header />
          <View>
          <Text style={tw`text-pink-400`}>Hello world</Text>
          </View>
