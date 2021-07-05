@@ -1,14 +1,14 @@
 import React from "react";
-import { SafeAreaView, Text } from "react-native";
+import { SafeAreaView } from "react-native";
 import Router from "./Router";
+import tw from "./tailwind";
 
-const App = () => {
+function App() {
 	return (
-		<SafeAreaView>
+		<SafeAreaView style={tw`p-2`}>
 			<Router />
-			<Text>Foobar</Text>
 		</SafeAreaView>
 	);
-};
+}
 
 export default App;
