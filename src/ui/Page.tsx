@@ -1,5 +1,5 @@
 import React, { ReactNode } from 'react'
-import { View } from 'react-native'
+import { View, ScrollView } from 'react-native'
 import tw from '../tailwind'
 import BottomBar from './Navigation/BottomBar'
 
@@ -18,10 +18,10 @@ function Page({ title, children, headerLeft, headerRight }: Props) {
 				<View style={tw`w-4/5`}>{title}</View>
 				<View>{headerRight}</View>
 			</View>
-			<View style={tw`p-2`}>
+			<ScrollView style={tw`p-2 flex-1`}>
 				{children}
-			</View>
-			<View style={tw`absolute bottom-0 flex-row bg-gray-700 w-full justify-evenly`}>
+			</ScrollView>
+			<View style={tw`flex-row bg-gray-700 w-full justify-evenly`}>
 				<BottomBar />
 			</View>
 		</View>
