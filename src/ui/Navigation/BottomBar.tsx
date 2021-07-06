@@ -5,6 +5,8 @@ import tw from "../../tailwind";
 
 type Props = {};
 
+const selectedStyle = 'bg-gray-300'
+
 function BottomBar({}: Props) {
 	const history = useHistory();
 	const location = useLocation();
@@ -12,13 +14,13 @@ function BottomBar({}: Props) {
 	return (
 		<>
 			<Text
-				style={tw.style("text-white text-lg", { "bg-gray-200": location.pathname === "/" })}
+				style={tw.style("text-white text-lg px-4", { [selectedStyle]: location.pathname === "/" })}
 				onPress={() => history.push("/")}
 			>
 				Controls
 			</Text>
 			<Text
-				style={tw.style("text-white text-lg", { "bg-gray-400": location.pathname === "/effects" })}
+				style={tw.style("text-white text-lg px-4", { [selectedStyle]: location.pathname === "/effects" })}
 				onPress={() => history.push("/effects")}
 			>
 				Effects
