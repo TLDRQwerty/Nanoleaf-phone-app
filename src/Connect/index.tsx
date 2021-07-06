@@ -5,12 +5,15 @@ import TextInput from "../ui/TextInput";
 import api, { PATHS } from "../utils/api";
 import { saveItem, StorageKeys, getItem } from "../utils/localStorage";
 import tw from "../tailwind";
+import Page from "../ui/Page";
+import { useHistory } from "react-router-native";
 
 type Response = {
 	auth_token: string;
 };
 
 function Connect() {
+	const history = useHistory()
 	const [ip, setIp] = useState("");
 
 	useEffect(() => {
@@ -26,19 +29,21 @@ function Connect() {
 		const response = await api<Response>(PATHS.new, {
 			method: "POST",
 		});
-		saveItem(StorageKeys.AUTH_TOKEN, response?.auth_token || "");
+		if (response) {
+			saveItem(StorageKeys.AUTH_TOKEN, response.auth_token);
+			history.push('/')
+		}
 	}
 
 	return (
-		<View>
-			<Text>Connect</Text>
-			<View style={tw`flex-row justify-between`}>
-				<TextInput style={tw`flex-1 mr-3`} value={ip} onChangeText={setIp} placeholder="192.168.x.x" />
+		<Page title={<Text style={tw`text-white text-center text-lg font-bold`}>Connect</Text>}>
+			<View style={tw`justify-center h-full`}>
+				<TextInput style={tw`mb-3`} value={ip} onChangeText={setIp} placeholder="192.168.x.x" />
 				<Button onPress={connectToLeaf}>
 					<Text style={tw`text-center text-white`}>Connect</Text>
 				</Button>
 			</View>
-		</View>
+		</Page>
 	);
 }
 

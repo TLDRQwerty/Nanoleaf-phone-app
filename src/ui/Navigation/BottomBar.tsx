@@ -1,12 +1,30 @@
-import React from 'react'
-import { View } from 'react-native'
+import React from "react";
+import { View, Text } from "react-native";
+import { useHistory, useLocation } from "react-router-native";
+import tw from "../../tailwind";
 
-type Props = {
-}
+type Props = {};
 
-function BottomBar() {
+function BottomBar({}: Props) {
+	const history = useHistory();
+	const location = useLocation();
+
 	return (
-		<View>
-		</View>
-	)
+		<>
+			<Text
+				style={tw.style("text-white text-lg", { "bg-gray-200": location.pathname === "/" })}
+				onPress={() => history.push("/")}
+			>
+				Controls
+			</Text>
+			<Text
+				style={tw.style("text-white text-lg", { "bg-gray-400": location.pathname === "/effects" })}
+				onPress={() => history.push("/effects")}
+			>
+				Effects
+			</Text>
+		</>
+	);
 }
+
+export default BottomBar;

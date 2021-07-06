@@ -1,13 +1,15 @@
 import React from "react";
 import { NativeRouter, Route } from "react-router-native";
-import Home from "./Home";
+import Controls from "./Controls";
+import Effects from "./Effects";
 import Connect from "./Connect";
 
 const Router = () => {
 	return (
 		<NativeRouter>
 			<Route exact component={Connect} path="/connect" />
-			<Route exact component={Home} />
+			<Route exact component={Controls} path="/" />
+			<Route exact component={Effects} path="/effects" />
 		</NativeRouter>
 	);
 };

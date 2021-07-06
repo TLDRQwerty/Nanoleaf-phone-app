@@ -15,6 +15,9 @@ export const PATHS = {
 	hue: "state/hue",
 	saturation: "state/st",
 	colorTemperature: "state/ct",
+	effects: 'effects',
+	effectsList: 'effects/effectsList',
+	effectsSelect: 'effects/select',
 };
 
 async function api<T>(path: string, options: ApiOptions): Promise<T | null> {

@@ -34,9 +34,8 @@ function Power() {
 
 	return (
 		<View>
-			<Text>Power</Text>
-			<Button onPress={handleOn}>
-				<Text style={tw`text-center text-white`}>{on ? "Off" : "On"}</Text>
+			<Button onPress={handleOn} style={tw.style({ 'bg-white': on })}>
+				<Text style={tw.style(`text-center text-black`, { 'text-white': !on })}>{on ? "Off" : "On"}</Text>
 			</Button>
 		</View>
 	);
