@@ -3,13 +3,14 @@ import { Text, View } from "react-native";
 import api, { PATHS } from "../utils/api";
 import Button from "../ui/Button";
 import tw from "../tailwind";
+import { On } from "../utils/api/types";
 
 function Power() {
 	const [on, setOn] = useState(false);
 
 	useEffect(() => {
 		const fetchOn = async () => {
-			const response = await api<{ value: boolean }>(PATHS.on, {
+			const response = await api<{ value: On }>(PATHS.on, {
 				method: "GET",
 			});
 
@@ -34,8 +35,8 @@ function Power() {
 
 	return (
 		<View>
-			<Button onPress={handleOn} style={tw.style({ 'bg-white': on })}>
-				<Text style={tw.style(`text-center text-black`, { 'text-white': !on })}>{on ? "Off" : "On"}</Text>
+			<Button onPress={handleOn} active={!on}>
+				<Text style={tw.style(`text-center text-secondary-900`)}>{on ? "Off" : "On"}</Text>
 			</Button>
 		</View>
 	);

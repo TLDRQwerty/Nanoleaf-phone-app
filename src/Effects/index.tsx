@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import tw from "../tailwind";
-import { Text, View, Pressable } from "react-native";
+import { View, Pressable, ListRenderItemInfo } from "react-native";
+import Text from "../ui/Text";
 import Page from "../ui/Page";
 import api, { PATHS } from "../utils/api";
 import List from "../ui/List";
+import { Link } from "react-router-native";
 
 function Effects() {
 	const [effects, setEffects] = useState<Array<string>>([]);
@@ -23,11 +25,11 @@ function Effects() {
 
 	useEffect(() => {
 		const fetchSelectedEffect = async () => {
-			const response = await api<{ select: string }>(PATHS.effectsSelect, {
+			const response = await api<string>(PATHS.effectsSelect, {
 				method: "GET",
 			});
 			if (response) {
-				setEffect(response.select);
+				setEffect(response);
 			}
 		};
 		fetchSelectedEffect();
@@ -38,12 +40,12 @@ function Effects() {
 		setEffect(effectName);
 	};
 
-	function renderItem(item: string) {
+	function renderItem({ item  }: ListRenderItemInfo<string>) {
 		return (
 			<Pressable
 				key={item}
 				onPress={() => selectEffect(item)}
-				style={tw.style({ ["bg-gray-400"]: item === effect }, "py-2 pl-4")}
+				style={tw.style({ ["bg-primary-100"]: item === effect }, "py-2 pl-4")}
 			>
 				<Text>{item}</Text>
 			</Pressable>
@@ -51,7 +53,14 @@ function Effects() {
 	}
 
 	return (
-		<Page title={<Text style={tw`text-white text-lg font-bold text-center`}>Effects</Text>}>
+		<Page
+			title={<Text style={tw`text-secondary-700 text-lg font-bold text-center`}>Effects</Text>}
+			headerRight={
+				<Link to="effects/create">
+					<Text>Create</Text>
+				</Link>
+			}
+		>
 			<View>
 				<List items={effects} renderItem={renderItem} />
 			</View>

@@ -1,30 +1,34 @@
 class Logger {
 	static checkForDev() {
-		if (!__DEV__) return
+		return __DEV__;
 	}
 
 	static error(out: any, ...optionalParams: any[]) {
-		this.checkForDev()
-		console.error()
-		console.log(out, ...optionalParams)
+		if (this.checkForDev()) {
+			console.error(out, ...optionalParams);
+		}
 	}
 
 	static log(out: any, ...optionalParams: any[]) {
-		this.checkForDev()
-		console.log(out, ...optionalParams)
+		if (this.checkForDev()) {
+			console.log(out, ...optionalParams);
+		}
 	}
 
 	static info(out: any, ...optionalParams: any[]) {
-		this.checkForDev()
-		console.info(out, ...optionalParams)
+		if (this.checkForDev()) {
+			console.info(out, ...optionalParams);
+		}
 	}
 
 	static group(label: string, callback: () => void) {
-		this.checkForDev()
-		console.group(...label)
-		callback();
-		console.groupEnd()
+		if (this.checkForDev()) {
+			this.checkForDev();
+			console.group(...label);
+			callback();
+			console.groupEnd();
+		}
 	}
 }
 
-export default Logger
+export default Logger;

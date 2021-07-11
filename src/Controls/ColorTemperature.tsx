@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import Slider from "../ui/Slider";
 import api, { PATHS } from "../utils/api";
 import { useDebouce } from "../hooks/useDebouce";
+import { StateRange } from "../utils/api/types";
 
 function ColorTemperature() {
 	const [color, setColor] = useState(0);
 
 	useEffect(() => {
 		const fetchColor = async () => {
-			const response = await api<{ value: 100; max: 100; min: 0 }>(PATHS.colorTemperature, {
+			const response = await api<StateRange>(PATHS.colorTemperature, {
 				method: "GET",
 			});
 			if (response) {
@@ -31,10 +32,6 @@ function ColorTemperature() {
 
 	const debouceColorTemperature = useDebouce(sendColorTemperature, 10);
 
-	useEffect(() => {
-		debouceColorTemperature();
-	}, [color, debouceColorTemperature]);
-
 	return (
 		<Slider
 			label="Color Temperature"
@@ -42,7 +39,10 @@ function ColorTemperature() {
 			minimumValue={0}
 			maximumValue={6500}
 			value={color}
-			onValueChange={setColor}
+			onValueChange={(value) => {
+				setColor(value);
+				debouceColorTemperature();
+			}}
 		/>
 	);
 }

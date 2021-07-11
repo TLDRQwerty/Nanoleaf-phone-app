@@ -1,10 +1,12 @@
-import React, { ReactNode } from "react";
-import { ScrollView } from "react-native";
+import React, { ComponentProps } from "react";
+import { FlatList } from "react-native";
 
-type Props<T> = { items: Array<T>; renderItem: (item: T) => ReactNode };
+type Props<T> = {
+	items: Array<T>;
+} & Omit<ComponentProps<typeof FlatList>, "data">;
 
-function List<T>({ items, renderItem }: Props<T>) {
-	return <ScrollView>{items.map((item) => renderItem(item))}</ScrollView>;
+function List<T>({ items, ...rest }: Props<T>) {
+	return <FlatList data={items} {...rest} />;
 }
 
 export default List;

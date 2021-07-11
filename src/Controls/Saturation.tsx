@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import Slider from "../ui/Slider";
 import api, { PATHS } from "../utils/api";
 import { useDebouce } from "../hooks/useDebouce";
+import { StateRange } from "../utils/api/types";
 
 function Saturation() {
 	const [saturation, setSaturation] = useState(0);
 
 	useEffect(() => {
 		const fetchSaturation = async () => {
-			const response = await api<{ value: 100; max: 100; min: 0 }>(PATHS.saturation, {
+			const response = await api<StateRange>(PATHS.saturation, {
 				method: "GET",
 			});
 			if (response) {
@@ -31,10 +32,6 @@ function Saturation() {
 
 	const debouceSaturation = useDebouce(sendSaturation, 10);
 
-	useEffect(() => {
-		debouceSaturation();
-	}, [saturation, debouceSaturation]);
-
 	return (
 		<Slider
 			label="Saturation"
@@ -42,7 +39,10 @@ function Saturation() {
 			minimumValue={0}
 			maximumValue={100}
 			value={saturation}
-			onValueChange={setSaturation}
+			onValueChange={(value) => {
+				setSaturation(value);
+				debouceSaturation();
+			}}
 		/>
 	);
 }

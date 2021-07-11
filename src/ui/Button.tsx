@@ -1,19 +1,29 @@
-import React from 'react'
-import { Pressable, GestureResponderEvent, PressableProps, StyleProp } from 'react-native'
-import tw from '../tailwind'
+import React from "react";
+import { Pressable, GestureResponderEvent, PressableProps, StyleProp } from "react-native";
+import tw from "../tailwind";
 
 type Props = {
-	children: React.ReactChild,
-	onPress: (press: GestureResponderEvent) => void,
-	style?: StyleProp<PressableProps>,
-}
+	children: React.ReactChild;
+	onPress: (press: GestureResponderEvent) => void;
+	style?: StyleProp<PressableProps>;
+	active?: boolean;
+};
 
-function Button({ children, onPress, style }: Props) {
+function Button({ children, onPress, style, active }: Props) {
 	return (
-		<Pressable style={[tw`bg-blue-500 font-bold py-2 px-4 border border-blue-700 rounded`, style]} onPress={onPress}>
+		<Pressable
+			style={[
+				tw.style(
+					"bg-secondary-400 font-bold py-2 px-4 border border-secondary-600 rounded",
+					active && "bg-secondary-100"
+				),
+				style,
+			]}
+			onPress={onPress}
+		>
 			{children}
 		</Pressable>
-	)
+	);
 }
 
-export default Button
+export default Button;

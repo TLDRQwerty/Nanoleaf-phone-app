@@ -1,4 +1,13 @@
 {
   "name": "phone",
-  "displayName": "phone"
+  "displayName": "phone",
+  "expo": {
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "userInterfaceStyle": "automatic"
+    },
+    "android": {
+      "userInterfaceStyle": "automatic"
+    }
+  }
 }

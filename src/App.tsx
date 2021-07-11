@@ -1,11 +1,14 @@
 import React from "react";
 import { SafeAreaView } from "react-native";
 import Router from "./Router";
+import { NativeRouter } from "react-router-native";
 
 function App() {
 	return (
 		<SafeAreaView>
-			<Router />
+			<NativeRouter>
+				<Router />
+			</NativeRouter>
 		</SafeAreaView>
 	);
 }

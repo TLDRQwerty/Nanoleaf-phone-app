@@ -13,11 +13,11 @@ export const PATHS = {
 	on: "state/on",
 	brightness: "state/brightness",
 	hue: "state/hue",
-	saturation: "state/st",
+	saturation: "state/sat",
 	colorTemperature: "state/ct",
-	effects: 'effects',
-	effectsList: 'effects/effectsList',
-	effectsSelect: 'effects/select',
+	effects: "effects",
+	effectsList: "effects/effectsList",
+	effectsSelect: "effects/select",
 };
 
 async function api<T>(path: string, options: ApiOptions): Promise<T | null> {

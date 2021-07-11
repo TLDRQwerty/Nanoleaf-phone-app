@@ -13,13 +13,13 @@ type Response = {
 };
 
 function Connect() {
-	const history = useHistory()
+	const history = useHistory();
 	const [ip, setIp] = useState("");
 
 	useEffect(() => {
 		const getIp = async () => {
-			const ip = await getItem(StorageKeys.NANOLEAF_IP_ADDRESS);
-			setIp(ip);
+			const storageIp = await getItem(StorageKeys.NANOLEAF_IP_ADDRESS);
+			setIp(storageIp);
 		};
 		getIp();
 	}, []);
@@ -31,7 +31,7 @@ function Connect() {
 		});
 		if (response) {
 			saveItem(StorageKeys.AUTH_TOKEN, response.auth_token);
-			history.push('/')
+			history.push("/");
 		}
 	}
 

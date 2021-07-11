@@ -2,17 +2,17 @@ import React, { useState, useEffect } from "react";
 import Slider from "../ui/Slider";
 import api, { PATHS } from "../utils/api";
 import { useDebouce } from "../hooks/useDebouce";
+import { StateRange } from "../utils/api/types";
 
 function Brightness() {
 	const [brightness, setBrightness] = useState(0);
 
 	useEffect(() => {
 		const fetchBrightness = async () => {
-			const response = await api<{ value: 100; max: 100; min: 0 }>(PATHS.brightness, {
+			const response = await api<StateRange>(PATHS.brightness, {
 				method: "GET",
 			});
 			if (response) {
-				console.log(response);
 				setBrightness(response.value);
 			}
 		};
@@ -32,10 +32,6 @@ function Brightness() {
 
 	const debouceBrightness = useDebouce(sendBrightness, 10);
 
-	useEffect(() => {
-		debouceBrightness();
-	}, [brightness, debouceBrightness]);
-
 	return (
 		<Slider
 			label="Brightness"
@@ -43,7 +39,10 @@ function Brightness() {
 			minimumValue={0}
 			maximumValue={100}
 			value={brightness}
-			onValueChange={setBrightness}
+			onValueChange={(value) => {
+				setBrightness(value);
+				debouceBrightness();
+			}}
 		/>
 	);
 }
