@@ -33,12 +33,14 @@ function Home() {
 			title={<Text style={tw`text-primary-800 text-center text-lg font-bold`}>Controller</Text>}
 			headerLeft={<Text onPress={handleLogout}>Logout</Text>}
 		>
-			<View>
+			<View style={tw`flex-1`}>
 				<Power />
-				<Brightness />
-				<Hue />
-				<Saturation />
-				<ColorTemperature />
+				<View style={tw`rounded border-2 border-primary-100 mt-2 p-2`}>
+					<Brightness />
+					<Hue />
+					<Saturation />
+					<ColorTemperature />
+				</View>
 			</View>
 		</Page>
 	);

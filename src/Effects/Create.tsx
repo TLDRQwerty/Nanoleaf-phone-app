@@ -31,10 +31,12 @@ function Create() {
 			})
 		);
 
+	const removePalette = (id: string) => setPalette((prev) => prev.filter((i) => i.id !== id));
+
 	const renderItem = ({ item, index, seperator }: ListRenderItemInfo<WithUuid<Palette>>) => (
-		<View style={tw`mb-1 bg-white`} key={item.id}>
-			<View style={tw`flex-row`}>
-				<View style={tw`justify-center mr-4`}>
+		<View style={tw.style("mb-1 bg-white ")} key={item.id}>
+			<View style={tw`flex-row border-2 p-2 rounded border-primary-100`}>
+				<View style={tw`justify-center pr-2 mr-2 border-r-2 border-primary-100`}>
 					<Text>{index + 1}</Text>
 				</View>
 				<View style={tw`flex-col flex-1`}>
@@ -63,9 +65,19 @@ function Create() {
 			<View>
 				<Text>Animation Name</Text>
 				<TextInput value={animName} onChangeText={setAnimName} placeholder="name..." />
-				<View style={tw`bg-gray-200 border-t-2 mt-2`}>
-					<Text style={tw`text-center bg-white`}>Animation Palette</Text>
-					<List items={palette} renderItem={renderItem} />
+				<View style={tw`border-t-2 border-primary-800 mt-2`}>
+					<List
+						items={palette}
+						renderItem={renderItem}
+						ListHeaderComponent={<Text style={tw`text-center bg-white`}>Animation Palette</Text>}
+						ListEmptyComponent={
+							<Button onPress={handleAdd}>
+								<Text style={tw`text-center`} onPress={handleAdd}>
+									Click here or 'Add' to add a new palette
+								</Text>
+							</Button>
+						}
+					/>
 				</View>
 				<Button onPress={() => {}}>
 					<Text style={tw`text-center`}>Save</Text>

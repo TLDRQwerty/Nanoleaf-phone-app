@@ -1,11 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Text, View } from "react-native";
+import { Text, View, PressableProps, StyleProp } from "react-native";
 import api, { PATHS } from "../utils/api";
 import Button from "../ui/Button";
 import tw from "../tailwind";
 import { On } from "../utils/api/types";
 
-function Power() {
+type Props = {
+	buttonStyle?: StyleProp<PressableProps>;
+};
+
+function Power({ buttonStyle }: Props) {
 	const [on, setOn] = useState(false);
 
 	useEffect(() => {
@@ -35,7 +39,7 @@ function Power() {
 
 	return (
 		<View>
-			<Button onPress={handleOn} active={!on}>
+			<Button onPress={handleOn} active={!on} style={buttonStyle}>
 				<Text style={tw.style(`text-center text-secondary-900`)}>{on ? "Off" : "On"}</Text>
 			</Button>
 		</View>

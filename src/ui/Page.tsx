@@ -25,9 +25,9 @@ function Page({ title, children, headerLeft, headerRight }: Props) {
 					)}
 				</View>
 				<View style={tw`flex-1`}>{title}</View>
-				<View style={tw`w-1/6 flex-row-reverse`}>{headerRight || <Power />}</View>
+				<View style={tw`w-1/6 flex-row-reverse`}>{headerRight || <Power buttonStyle={tw`p-1`} />}</View>
 			</View>
-			<ScrollView style={tw`p-2`}>
+			<ScrollView style={tw`pb-4 p-2`}>
 				<View style={tw`pb-4`}>{children}</View>
 			</ScrollView>
 			<View style={tw`flex-row bg-secondary-200 justify-evenly border-t-2 border-primary-100`}>
