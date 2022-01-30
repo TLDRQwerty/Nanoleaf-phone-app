@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { View, Text } from "react-native";
+import { View } from "react-native";
 import Button from "../ui/Button";
 import TextInput from "../ui/TextInput";
 import api, { PATHS } from "../utils/api";
 import { saveItem, StorageKeys, getItem } from "../utils/localStorage";
 import tw from "../tailwind";
 import Page from "../ui/Page";
+import Text from "../ui/Text";
 import { useHistory } from "react-router-native";
 
 type Response = {
@@ -19,7 +20,9 @@ function Connect() {
 	useEffect(() => {
 		const getIp = async () => {
 			const storageIp = await getItem(StorageKeys.NANOLEAF_IP_ADDRESS);
-			setIp(storageIp);
+			if (storageIp) {
+				setIp(storageIp);
+			}
 		};
 		getIp();
 	}, []);
@@ -36,12 +39,10 @@ function Connect() {
 	}
 
 	return (
-		<Page title={<Text style={tw`text-white text-center text-lg font-bold`}>Connect</Text>}>
+		<Page title={<Text style={tw`text-primary-900 text-center text-lg font-bold`}>Connect</Text>}>
 			<View style={tw`justify-center h-full`}>
 				<TextInput style={tw`mb-3`} value={ip} onChangeText={setIp} placeholder="192.168.x.x" />
-				<Button onPress={connectToLeaf}>
-					<Text style={tw`text-center text-white`}>Connect</Text>
-				</Button>
+				<Button onPress={connectToLeaf} label="Connect" type="primary" />
 			</View>
 		</Page>
 	);

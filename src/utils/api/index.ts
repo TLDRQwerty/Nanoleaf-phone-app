@@ -1,5 +1,4 @@
 import { StorageKeys, getItem } from "../localStorage";
-import Logger from "../Logger";
 
 type ApiOptions = {
 	method: "GET" | "POST" | "PUT";
@@ -25,27 +24,20 @@ async function api<T>(path: string, options: ApiOptions): Promise<T | null> {
 	const authToken = (await getItem(StorageKeys.AUTH_TOKEN)) || "";
 	const url = `http://${ip}:16021/api/v1/${authToken ? authToken + "/" : ""}${path}`;
 
-	Logger.info(`Fetch -> ${url} -> ${JSON.stringify(options)}`);
-
 	const response = await fetch(url, {
 		...options,
 		body: JSON.stringify(options.body),
 	});
 
 	if (!response.ok) {
-		Logger.error(
-			`Failed to fetch ${url} -> ${JSON.stringify(options)} -> ${response.status} -> ${response.statusText}`
-		);
 		return null;
 	}
 
 	if (response.status === 204) {
-		Logger.info(`API -> ${url} -> 204`);
 		return null;
 	}
 
 	const json = (await response.json()) as any as T;
-	Logger.info(`API -> ${url} -> `, json);
 	return json;
 }
 

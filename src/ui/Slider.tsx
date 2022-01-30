@@ -1,7 +1,7 @@
 import React from "react";
 import CSlider, { SliderProps } from "@react-native-community/slider";
 import { View } from "react-native";
-import Text from '../ui/Text'
+import Text from "../ui/Text";
 import tw from "../tailwind";
 
 type Props = { label: string } & SliderProps;

@@ -8,7 +8,9 @@ import ColorTemperature from "./ColorTemperature";
 import { useHistory } from "react-router-native";
 import { getItem, StorageKeys, removeItem } from "../utils/localStorage";
 import Page from "../ui/Page";
+import { LogoutIcon } from "react-native-heroicons/solid";
 import tw from "../tailwind";
+import Info from "../Info";
 
 function Home() {
 	const history = useHistory();
@@ -31,16 +33,17 @@ function Home() {
 	return (
 		<Page
 			title={<Text style={tw`text-primary-800 text-center text-lg font-bold`}>Controller</Text>}
-			headerLeft={<Text onPress={handleLogout}>Logout</Text>}
+			headerLeft={<LogoutIcon style={tw`text-primary-300`} onPress={handleLogout} />}
 		>
 			<View style={tw`flex-1`}>
 				<Power />
-				<View style={tw`rounded border-2 border-primary-100 mt-2 p-2`}>
+				<View style={tw`shadow-lg mx-4 bg-secondary-50 rounded-lg border border-primary-100 mt-2 p-2`}>
 					<Brightness />
 					<Hue />
 					<Saturation />
 					<ColorTemperature />
 				</View>
+				<Info />
 			</View>
 		</Page>
 	);

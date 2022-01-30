@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Slider from "../ui/Slider";
 import api, { PATHS } from "../utils/api";
-import { useDebouce } from "../hooks/useDebouce";
+import { useDebounce } from "../hooks/useDebounce";
 import { StateRange } from "../utils/api/types";
 
 function ColorTemperature() {
@@ -30,18 +30,18 @@ function ColorTemperature() {
 		});
 	};
 
-	const debouceColorTemperature = useDebouce(sendColorTemperature, 10);
+	const debounceColorTemperature = useDebounce(sendColorTemperature);
 
 	return (
 		<Slider
 			label="Color Temperature"
 			step={1}
-			minimumValue={0}
+			minimumValue={1200}
 			maximumValue={6500}
 			value={color}
 			onValueChange={(value) => {
 				setColor(value);
-				debouceColorTemperature();
+				debounceColorTemperature();
 			}}
 		/>
 	);

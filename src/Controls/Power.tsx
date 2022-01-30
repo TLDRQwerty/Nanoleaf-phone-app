@@ -39,9 +39,7 @@ function Power({ buttonStyle }: Props) {
 
 	return (
 		<View>
-			<Button onPress={handleOn} active={!on} style={buttonStyle}>
-				<Text style={tw.style(`text-center text-secondary-900`)}>{on ? "Off" : "On"}</Text>
-			</Button>
+			<Button onPress={handleOn} active={!on} style={buttonStyle} label={on ? "Off" : "On"} />
 		</View>
 	);
 }

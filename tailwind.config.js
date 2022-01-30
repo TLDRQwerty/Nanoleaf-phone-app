@@ -5,11 +5,8 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				gray: colors.gray,
-				primary: colors.indigo,
+				primary: colors.fuchsia,
 				secondary: colors.gray,
-				light: colors.black,
-				dark: colors.white,
 			},
 		},
 	},

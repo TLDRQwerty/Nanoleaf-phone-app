@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Slider from "../ui/Slider";
 import api, { PATHS } from "../utils/api";
-import { useDebouce } from "../hooks/useDebouce";
+import { useDebounce } from "../hooks/useDebounce";
 import { StateRange } from "../utils/api/types";
 
 function Saturation() {
@@ -30,7 +30,7 @@ function Saturation() {
 		});
 	};
 
-	const debouceSaturation = useDebouce(sendSaturation, 10);
+	const debounceSaturation = useDebounce(sendSaturation);
 
 	return (
 		<Slider
@@ -41,7 +41,7 @@ function Saturation() {
 			value={saturation}
 			onValueChange={(value) => {
 				setSaturation(value);
-				debouceSaturation();
+				debounceSaturation();
 			}}
 		/>
 	);

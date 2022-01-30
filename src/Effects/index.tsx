@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import tw from "../tailwind";
-import { View, Pressable, ListRenderItemInfo } from "react-native";
+import { View, Pressable } from "react-native";
 import Text from "../ui/Text";
 import Page from "../ui/Page";
 import api, { PATHS } from "../utils/api";
@@ -35,26 +35,29 @@ function Effects() {
 		fetchSelectedEffect();
 	}, []);
 
-	const selectEffect = async (effectName: string) => {
+	const selectEffect = React.useCallback(async (effectName: string) => {
 		await api(PATHS.effects, { method: "PUT", body: { select: effectName } });
 		setEffect(effectName);
-	};
+	}, []);
 
-	function renderItem({ item  }: ListRenderItemInfo<string>) {
+	const renderItem = ({ item }) => {
 		return (
 			<Pressable
 				key={item}
 				onPress={() => selectEffect(item)}
-				style={tw.style({ ["bg-primary-100"]: item === effect }, "py-2 pl-4")}
+				style={tw.style(
+					{ ["bg-primary-100 rounded-lg border border-primary-200 shadow-lg"]: item === effect },
+					"py-2 pl-4 mx-2"
+				)}
 			>
 				<Text>{item}</Text>
 			</Pressable>
 		);
-	}
+	};
 
 	return (
 		<Page
-			title={<Text style={tw`text-secondary-700 text-lg font-bold text-center`}>Effects</Text>}
+			title={<Text style={tw`text-primary-700 text-lg font-bold text-center`}>Effects</Text>}
 			headerRight={
 				<Link to="effects/create">
 					<Text>Create</Text>
@@ -62,7 +65,15 @@ function Effects() {
 			}
 		>
 			<View>
-				<List items={effects} renderItem={renderItem} />
+				<List
+					items={effects}
+					renderItem={renderItem}
+					ListEmptyComponent={
+						<Text style={tw`text-center font-bold`} type="secondary">
+							Failed to find any effects
+						</Text>
+					}
+				/>
 			</View>
 		</Page>
 	);

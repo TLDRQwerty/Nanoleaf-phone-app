@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Slider from "../ui/Slider";
 import api, { PATHS } from "../utils/api";
-import { useDebouce } from "../hooks/useDebouce";
+import { useDebounce } from "../hooks/useDebounce";
 import { StateRange } from "../utils/api/types";
 
 function Brightness() {
@@ -30,7 +30,7 @@ function Brightness() {
 		});
 	};
 
-	const debouceBrightness = useDebouce(sendBrightness, 10);
+	const debounceBrightness = useDebounce(sendBrightness);
 
 	return (
 		<Slider
@@ -41,7 +41,7 @@ function Brightness() {
 			value={brightness}
 			onValueChange={(value) => {
 				setBrightness(value);
-				debouceBrightness();
+				debounceBrightness();
 			}}
 		/>
 	);

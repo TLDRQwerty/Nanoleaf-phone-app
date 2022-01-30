@@ -1,10 +1,9 @@
 import React, { ReactNode } from "react";
-import { View, ScrollView } from "react-native";
+import { View } from "react-native";
 import tw from "../tailwind";
 import BottomBar from "./Navigation/BottomBar";
+import { ArrowSmLeftIcon} from "react-native-heroicons/solid";
 import { Link } from "react-router-native";
-import Text from "./Text";
-import Power from "../Controls/Power";
 
 type Props = {
 	title: ReactNode;
@@ -16,21 +15,19 @@ type Props = {
 function Page({ title, children, headerLeft, headerRight }: Props) {
 	return (
 		<View style={tw`h-full`}>
-			<View style={tw`flex-row p-2 bg-secondary-200 px-4 items-center border-b-2 border-primary-100 w-full`}>
+			<View style={tw`flex-row p-2 bg-secondary-50 px-4 items-center shadow-lg`}>
 				<View style={tw`w-1/6`}>
 					{headerLeft || (
 						<Link to="..">
-							<Text>Back</Text>
+							<ArrowSmLeftIcon style={tw`text-primary-300`} />
 						</Link>
 					)}
 				</View>
 				<View style={tw`flex-1`}>{title}</View>
-				<View style={tw`w-1/6 flex-row-reverse`}>{headerRight || <Power buttonStyle={tw`p-1`} />}</View>
+				<View style={tw`w-1/6 flex-row-reverse`}>{headerRight || <View />}</View>
 			</View>
-			<ScrollView style={tw`pb-4 p-2`}>
-				<View style={tw`pb-4`}>{children}</View>
-			</ScrollView>
-			<View style={tw`flex-row bg-secondary-200 justify-evenly border-t-2 border-primary-100`}>
+			<View style={tw`pb-4 bg-secondary-50 flex flex-1`}>{children}</View>
+			<View style={tw`flex-row items-end bg-secondary-100 justify-evenly border-t-2 border-primary-100`}>
 				<BottomBar />
 			</View>
 		</View>

@@ -1,12 +1,13 @@
 import React, { ComponentProps } from "react";
-import { FlatList } from "react-native";
+import { FlatList, ListRenderItem } from "react-native";
 
 type Props<T> = {
 	items: Array<T>;
-} & Omit<ComponentProps<typeof FlatList>, "data">;
+	renderItem: ListRenderItem<T>;
+} & Omit<ComponentProps<typeof FlatList>, "data" | "renderItem">;
 
-function List<T>({ items, ...rest }: Props<T>) {
-	return <FlatList data={items} {...rest} />;
+function List<T>({ items, renderItem, ...rest }: Props<T>) {
+	return <FlatList data={items} renderItem={renderItem} {...rest} />;
 }
 
 export default List;

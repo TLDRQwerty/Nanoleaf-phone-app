@@ -1,3 +1,4 @@
+import "./wdyr";
 import React from "react";
 import { SafeAreaView } from "react-native";
 import Router from "./Router";

@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Route, useLocation } from "react-router-native";
+import { Route } from "react-router-native";
 import Controls from "./Controls";
 import Effects from "./Effects";
 import CreateEffect from "./Effects/Create";
@@ -33,7 +33,7 @@ const Router = () => {
 			<Route exact component={Connect} path="/connect" />
 			<Route exact component={Controls} path="/" />
 			<Route exact component={Effects} path="/effects" />
-			<Route exeact component={CreateEffect} path="/effects/create" />
+			<Route exact component={CreateEffect} path="/effects/create" />
 		</>
 	);
 };

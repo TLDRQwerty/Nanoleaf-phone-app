@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Slider from "../ui/Slider";
 import api, { PATHS } from "../utils/api";
-import { useDebouce } from "../hooks/useDebouce";
+import { useDebounce } from "../hooks/useDebounce";
 import { StateRange } from "../utils/api/types";
 
 function Hue() {
@@ -30,7 +30,7 @@ function Hue() {
 		});
 	};
 
-	const debouceHue = useDebouce(sendHue, 10);
+	const debounceHue = useDebounce(sendHue);
 
 	return (
 		<Slider
@@ -41,7 +41,7 @@ function Hue() {
 			value={hue}
 			onValueChange={(value) => {
 				setHue(value);
-				debouceHue();
+				debounceHue();
 			}}
 		/>
 	);

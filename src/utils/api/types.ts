@@ -23,7 +23,7 @@ export type Palette = {
 	hue?: number;
 	saturation?: number;
 	brightness?: number;
-	propability?: number;
+	probability?: number;
 };
 
 export type BrightnessRange = {
@@ -115,7 +115,7 @@ export type Info = {
 };
 
 export type X_Effects = {
-	comomand: CommandType;
+	command: CommandType;
 	version: 1.0;
 	duration?: number;
 	animName?: string;
