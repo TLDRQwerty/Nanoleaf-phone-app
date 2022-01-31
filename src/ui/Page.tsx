@@ -2,7 +2,7 @@ import React, { ReactNode } from "react";
 import { View } from "react-native";
 import tw from "../tailwind";
 import BottomBar from "./Navigation/BottomBar";
-import { ArrowSmLeftIcon} from "react-native-heroicons/solid";
+import { ArrowSmLeftIcon } from "react-native-heroicons/solid";
 import { Link } from "react-router-native";
 
 type Props = {
