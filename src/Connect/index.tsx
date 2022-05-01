@@ -40,7 +40,7 @@ function Connect() {
 
 	return (
 		<Page title={<Text style={tw`text-primary-900 text-center text-lg font-bold`}>Connect</Text>}>
-			<View style={tw`justify-center h-full`}>
+			<View style={tw`justify-center h-full px-2`}>
 				<TextInput style={tw`mb-3`} value={ip} onChangeText={setIp} placeholder="192.168.x.x" />
 				<Button onPress={connectToLeaf} label="Connect" type="primary" />
 			</View>

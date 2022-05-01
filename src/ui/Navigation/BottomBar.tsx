@@ -3,10 +3,11 @@ import { useLocation, Link } from "react-router-native";
 import Text from "../Text";
 import tw from "../../tailwind";
 import { getItem, StorageKeys } from "../../utils/localStorage";
+import { View } from "react-native";
 
 type Props = {};
 
-const selectedStyle = "bg-primary-200 rounded text-primary-600";
+const selectedStyle = "bg-primary-200 rounded text-primary-600 shadow-md";
 
 export default function BottomBar({}: Props) {
 	const [apiToken, setApiToken] = useState<String | null>(null);
@@ -23,7 +24,7 @@ export default function BottomBar({}: Props) {
 	}
 
 	return (
-		<>
+		<View style={tw`flex-row shadow shadow-offset-[0px]/[-2px]`}>
 			<Link to="/">
 				<Text style={tw.style("text-lg px-4 m-1", { [selectedStyle]: location.pathname === "/" })}>Controls</Text>
 			</Link>
@@ -32,6 +33,6 @@ export default function BottomBar({}: Props) {
 					Effects
 				</Text>
 			</Link>
-		</>
+		</View>
 	);
 }

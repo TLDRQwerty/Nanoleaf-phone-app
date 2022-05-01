@@ -1,8 +1,4 @@
-import { create } from "tailwind-react-native-classnames";
-import styles from "../tw-rn-styles.json"; // <-- your path may differ
-
-// this function works just like the default package export
-// except it is customized according to your `tailwind.config.js`
-const tw = create(styles);
+import { create } from "twrnc";
+const tw = create(require(`../tailwind.config`)); // <- your path may differ
 
 export default tw;
