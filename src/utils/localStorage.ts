@@ -1,12 +1,24 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { SUPPORTED_LIGHTS } from "../types";
 import Logger from "./Logger";
 
-export enum StorageKeys {
-	"AUTH_TOKEN" = "AUTH_TOKEN",
-	"NANOLEAF_IP_ADDRESS" = "NANOLEAF_IP_ADDRESS",
-}
+type Keys = "IP_ADDRESS" | "AUTH_TOKEN";
 
-export async function getItem(key: StorageKeys): Promise<string | null> {
+export const StorageKeys: { [s in SUPPORTED_LIGHTS]: { [k in Keys]: `${s}_${k}` } } & {
+	PHILIPS: { CLIENT_KEY: string };
+} = {
+	NANOLEAF: {
+		IP_ADDRESS: "NANOLEAF_IP_ADDRESS",
+		AUTH_TOKEN: "NANOLEAF_AUTH_TOKEN",
+	},
+	PHILIPS: {
+		AUTH_TOKEN: "PHILIPS_AUTH_TOKEN",
+		IP_ADDRESS: "PHILIPS_IP_ADDRESS",
+		CLIENT_KEY: "PHILIPS_CLIENT_KEY",
+	},
+};
+
+export async function getItem(key: string, cb?: (value: string) => any): Promise<string | null> {
 	try {
 		const value = await AsyncStorage.getItem(key);
 		if (!value) {
@@ -14,6 +26,7 @@ export async function getItem(key: StorageKeys): Promise<string | null> {
 			return null;
 		}
 		Logger.info(`localStorage -> key ${key} -> data ${value}`);
+		if (cb) cb(value);
 		return value;
 	} catch (e) {
 		Logger.error(e);
@@ -21,7 +34,7 @@ export async function getItem(key: StorageKeys): Promise<string | null> {
 	}
 }
 
-export async function saveItem(key: StorageKeys, data: string): Promise<void> {
+export async function saveItem(key: string, data: string): Promise<void> {
 	try {
 		await AsyncStorage.setItem(key, data);
 		Logger.info(`Saved data ${data} using key ${key}`);
@@ -30,7 +43,7 @@ export async function saveItem(key: StorageKeys, data: string): Promise<void> {
 	}
 }
 
-export async function removeItem(key: StorageKeys): Promise<void> {
+export async function removeItem(key: string): Promise<void> {
 	try {
 		await AsyncStorage.removeItem(key);
 		Logger.info(`Removed data using key ${key}`);

@@ -1,0 +1,1 @@
+export type SUPPORTED_LIGHTS = "NANOLEAF" | "PHILIPS";

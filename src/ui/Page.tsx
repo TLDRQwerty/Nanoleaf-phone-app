@@ -1,7 +1,6 @@
-import React, { ReactNode } from "react";
-import { View } from "react-native";
+import React, { isValidElement, ReactNode } from "react";
+import { Text, View, ScrollView } from "react-native";
 import tw from "../tailwind";
-import BottomBar from "./Navigation/BottomBar";
 import { ArrowSmLeftIcon } from "react-native-heroicons/solid";
 import { Link } from "react-router-native";
 
@@ -10,9 +9,11 @@ type Props = {
 	children: ReactNode;
 	headerLeft?: ReactNode;
 	headerRight?: ReactNode;
+	scrollable: boolean;
 };
 
-function Page({ title, children, headerLeft, headerRight }: Props) {
+function Page({ title, children, headerLeft, headerRight, scrollable }: Props) {
+	const Component = scrollable ? ScrollView : View;
 	return (
 		<View style={tw`h-full`}>
 			<View style={tw`flex-row p-2 bg-secondary-50 px-4 items-center shadow-lg`}>
@@ -23,13 +24,16 @@ function Page({ title, children, headerLeft, headerRight }: Props) {
 						</Link>
 					)}
 				</View>
-				<View style={tw`flex-1`}>{title}</View>
+				<View style={tw`flex-1`}>
+					{isValidElement(title) ? (
+						title
+					) : (
+						<Text style={tw`text-center font-bold text-lg text-primary-900`}>{String(title)}</Text>
+					)}
+				</View>
 				<View style={tw`w-1/6 flex-row-reverse`}>{headerRight || <View />}</View>
 			</View>
-			<View style={tw`pb-4 bg-secondary-50 flex flex-1`}>{children}</View>
-			<View style={tw`flex-row items-end bg-secondary-100 justify-evenly border-t-2 border-primary-100`}>
-				<BottomBar />
-			</View>
+			<Component style={tw`pb-4 bg-secondary-50 flex flex-1`}>{children}</Component>
 		</View>
 	);
 }
