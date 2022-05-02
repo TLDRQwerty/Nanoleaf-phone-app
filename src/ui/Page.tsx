@@ -9,10 +9,10 @@ type Props = {
 	children: ReactNode;
 	headerLeft?: ReactNode;
 	headerRight?: ReactNode;
-	scrollable: boolean;
+	scrollable?: boolean;
 };
 
-function Page({ title, children, headerLeft, headerRight, scrollable }: Props) {
+function Page({ title, children, headerLeft, headerRight, scrollable = false }: Props) {
 	const Component = scrollable ? ScrollView : View;
 	return (
 		<View style={tw`h-full`}>

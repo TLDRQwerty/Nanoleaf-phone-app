@@ -1,50 +1,69 @@
-import React, { useState, useEffect } from "react";
-import { View, ScrollView } from "react-native";
+import React from "react";
+import { View } from "react-native";
 import Button from "../ui/Button";
 import TextInput from "../ui/TextInput";
 import api, { PATHS } from "../utils/api/api";
-import { saveItem, StorageKeys, getItem } from "../utils/localStorage";
+import { StorageKeys } from "../utils/localStorage";
 import tw from "../tailwind";
 import Page from "../ui/Page";
 import Text from "../ui/Text";
+import { Integration, useRealm } from "../Database";
+import useFindOrCreate from "../hooks/use-find-or-create";
 
 function Connect() {
-	const [nanoleaf, setNanoleaf] = useState("");
-	const [nanoleafConnected, setNanoleafConnected] = useState(false);
-	const [philips, setPhilips] = useState("");
-	const [philipsConnected, setPhilipsConnected] = useState(false);
+	const realm = useRealm();
+	const [nanoleaf, setNanoleaf] = useFindOrCreate(
+		Integration,
+		StorageKeys.NANOLEAF.IP_ADDRESS,
+		{ key: StorageKeys.NANOLEAF.IP_ADDRESS, value: "" },
+		(v, newValue) => (v.value = newValue)
+	);
+	const [philips, setPhilips] = useFindOrCreate(
+		Integration,
+		StorageKeys.PHILIPS.IP_ADDRESS,
+		{ key: StorageKeys.PHILIPS.IP_ADDRESS, value: "" },
+		(v, newValue) => (v.value = newValue)
+	);
 
-	useEffect(() => {
-		(async () => {
-			await getItem(StorageKeys.NANOLEAF.IP_ADDRESS, setNanoleaf);
-			await getItem(StorageKeys.PHILIPS.IP_ADDRESS, setPhilips);
-		})();
-	}, []);
-
-	async function connectToLeaf() {
-		saveItem(StorageKeys.NANOLEAF.IP_ADDRESS, nanoleaf);
-		const response = await api<{ auth_token: string }>(PATHS.nanoleaf.new, "NANOLEAF", {
+	const handleNanoleafPress = async () => {
+		const response = await api<{ auth_token: string }>(`http://${nanoleaf.value}:16021/api/v1/new`, {
 			method: "POST",
 		});
 		if (response) {
-			saveItem(StorageKeys.NANOLEAF.AUTH_TOKEN, response.auth_token);
+			realm.write(() => {
+				realm.create(
+					Integration,
+					Integration.create({ key: StorageKeys.NANOLEAF.AUTH_TOKEN, value: response.auth_token })
+				);
+			});
 		}
-	}
+	};
 
-	async function connectToPhilips() {
-		saveItem(StorageKeys.PHILIPS.IP_ADDRESS, philips);
-		const [response] = await api<[{ success: { username: string, clientkey: string, } }]>(PATHS.philips.api, "PHILIPS", {
+	const handlePhilipsPress = async () => {
+		const response = await api(`http://${philips.value}/api`, {
 			method: "POST",
-			body: {
-				devicetype: "app#my-device",
+			body: JSON.stringify({
+				devicetype: "app_name#instance_name",
 				generateclientkey: true,
-			},
+			}),
 		});
+		console.log({ response });
 		if (response) {
-			saveItem(StorageKeys.PHILIPS.AUTH_TOKEN, response.success.username);
-			saveItem(StorageKeys.PHILIPS.CLIENT_KEY, response.success.clientkey);
+			const [value] = response;
+			console.log(value)
+			realm.write(() => {
+				realm.create(
+					Integration,
+					Integration.create({ key: StorageKeys.PHILIPS.AUTH_TOKEN, value: value.success.username })
+				);
+
+				realm.create(
+					Integration,
+					Integration.create({ key: StorageKeys.PHILIPS.CLIENT_KEY, value: value.success.clientkey })
+				);
+			});
 		}
-	}
+	};
 
 	return (
 		<Page title={"Connect"}>
@@ -52,13 +71,13 @@ function Connect() {
 				<View style={tw`shadow-lg bg-secondary-50 rounded m-2`}>
 					<View style={tw`border-b border-gray-200 my-2 p-4 `}>
 						<Text>Nanoleaf</Text>
-						<TextInput style={tw`mb-3`} value={nanoleaf} onChangeText={setNanoleaf} placeholder="192.168.x.x" />
-						<Button onPress={connectToLeaf} label="Connect" type="primary" disabled={nanoleafConnected} />
+						<TextInput style={tw`mb-3`} value={nanoleaf.value} onChangeText={setNanoleaf} placeholder="192.168.x.x" />
+						<Button onPress={handleNanoleafPress} label="Connect" type="primary" />
 					</View>
 					<View style={tw`p-4`}>
 						<Text>Philips</Text>
-						<TextInput style={tw`mb-3`} value={philips} onChangeText={setPhilips} placeholder="192.168.x.x" />
-						<Button onPress={connectToPhilips} label="Connect" type="primary" disabled={philipsConnected} />
+						<TextInput style={tw`mb-3`} value={philips.value} onChangeText={setPhilips} placeholder="192.168.x.x" />
+						<Button onPress={handlePhilipsPress} label="Connect" type="primary" />
 					</View>
 				</View>
 			</View>

@@ -1,1 +1,1 @@
-export type SUPPORTED_LIGHTS = "NANOLEAF" | "PHILIPS";
+export type SUPPORTED_TYPES = "NANOLEAF" | "PHILIPS";

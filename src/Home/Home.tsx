@@ -17,8 +17,8 @@ export default function Home() {
 			scrollable
 		>
 			<ScrollView>
-				<Philips />
 				<Nanoleaf />
+				<Philips />
 			</ScrollView>
 		</Page>
 	);

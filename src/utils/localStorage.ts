@@ -1,10 +1,10 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { SUPPORTED_LIGHTS } from "../types";
+import { SUPPORTED_TYPES } from "../types";
 import Logger from "./Logger";
 
 type Keys = "IP_ADDRESS" | "AUTH_TOKEN";
 
-export const StorageKeys: { [s in SUPPORTED_LIGHTS]: { [k in Keys]: `${s}_${k}` } } & {
+export const StorageKeys: { [s in SUPPORTED_TYPES]: { [k in Keys]: `${s}_${k}` } } & {
 	PHILIPS: { CLIENT_KEY: string };
 } = {
 	NANOLEAF: {
