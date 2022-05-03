@@ -21,42 +21,49 @@ export const PATHS = Object.freeze({
 	},
 	philips: {
 		api: "",
-		devices: "resource/device",
+		devices: "device",
 		change: (lightNumber: number) => `light/${lightNumber}`,
 	},
 } as const);
 
 export const END_POINTS: { [K in SUPPORTED_TYPES]: (ip: string, token: string, path: string) => string } = {
 	NANOLEAF: (ip, token, path) => `http://${ip}:16021/api/v1/${token}/${path}`,
-	PHILIPS: (ip, _, path) => `https://${ip}/clip/v2/resource/${path}`,
+	PHILIPS: (ip, _, path) => `http://${ip}/clip/v2/resource/${path}`,
 };
 
-export default function useApi(path: string, type: SUPPORTED_TYPES, options: RequestInit) {
-	const [response, setResponse] = useState<Object | null>(null);
+export default function useApi<R extends Object | Array<Object>>(
+	path: string,
+	type: SUPPORTED_TYPES,
+	options: RequestInit
+): [R | null] {
+	const [response, setResponse] = useState<R | null>(null);
 	const ip = useObject(Integration, StorageKeys[type].IP_ADDRESS);
 	const auth = useObject(Integration, StorageKeys[type].AUTH_TOKEN);
 
+	const bodyOptions = JSON.stringify(options.body);
 	useEffect(() => {
-		if (ip == null) {
-			throw Error();
-		}
-
-		if (auth == null) {
-			throw Error();
-		}
-		if (type === "PHILIPS") {
-			options.headers = {
-				"hue-application-key": auth.value,
-			};
-		}
-		const url = `${END_POINTS[type](ip.value, auth.value, path)}`;
 		(async () => {
-			const r = await api(url, {
+			if (ip == null) {
+				throw Error();
+			}
+
+			if (auth == null) {
+				throw Error();
+			}
+			if (type === "PHILIPS") {
+				options.headers = {
+					"hue-application-key": auth.value,
+				};
+			}
+
+			const url = `${END_POINTS[type](ip.value, auth.value, path)}`;
+
+			const r = await api<R>(url, {
 				...options,
 			});
 			setResponse(r);
 		})();
-	}, []);
+	}, [bodyOptions]);
 
 	return [response];
 }

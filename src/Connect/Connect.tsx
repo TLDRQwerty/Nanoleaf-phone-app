@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import Button from "../ui/Button";
+import Pressable from "../ui/Pressable";
 import TextInput from "../ui/TextInput";
 import api, { PATHS } from "../utils/api/api";
 import { StorageKeys } from "../utils/localStorage";
@@ -50,7 +50,7 @@ function Connect() {
 		console.log({ response });
 		if (response) {
 			const [value] = response;
-			console.log(value)
+			console.log(value);
 			realm.write(() => {
 				realm.create(
 					Integration,
@@ -72,12 +72,12 @@ function Connect() {
 					<View style={tw`border-b border-gray-200 my-2 p-4 `}>
 						<Text>Nanoleaf</Text>
 						<TextInput style={tw`mb-3`} value={nanoleaf.value} onChangeText={setNanoleaf} placeholder="192.168.x.x" />
-						<Button onPress={handleNanoleafPress} label="Connect" type="primary" />
+						<Pressable onPress={handleNanoleafPress}>Connect</Pressable>
 					</View>
 					<View style={tw`p-4`}>
 						<Text>Philips</Text>
 						<TextInput style={tw`mb-3`} value={philips.value} onChangeText={setPhilips} placeholder="192.168.x.x" />
-						<Button onPress={handlePhilipsPress} label="Connect" type="primary" />
+						<Pressable onPress={handlePhilipsPress}>Connect</Pressable>
 					</View>
 				</View>
 			</View>

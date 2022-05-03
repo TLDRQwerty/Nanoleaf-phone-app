@@ -1,24 +1,15 @@
 import React, { ComponentProps, ReactNode } from "react";
 import { Text as NText } from "react-native";
+import { ClassInput } from "twrnc/dist/esm/types";
 import tw from "../tailwind";
 
 type Props = {
 	children: ReactNode;
-	type?: "primary" | "secondary";
-} & ComponentProps<typeof NText>;
+} & Omit<ComponentProps<typeof NText>, "style"> & { style?: ClassInput };
 
-function Text({ style, children, type = "primary", ...rest }: Props) {
+function Text({ style, children, ...rest }: Props) {
 	return (
-		<NText
-			style={[
-				tw.style({
-					"text-primary-900 text-base": type === "primary",
-					"text-secondary-400 text-xs": type === "secondary",
-				}),
-				style,
-			]}
-			{...rest}
-		>
+		<NText style={tw.style("text-black", style)} {...rest}>
 			{children}
 		</NText>
 	);

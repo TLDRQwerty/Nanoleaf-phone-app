@@ -24,14 +24,16 @@ export const PATHS = Object.freeze({
 	},
 } as const);
 
-async function api<T extends Object | Array<Object>>(url: string, options: RequestInit): Promise<Response | null> {
-	console.log(url, options);
+async function api<R extends Object | Array<Object>>(url: string, options: RequestInit): Promise<R | null> {
 	try {
 		const response = await fetch(url, options);
 
-		console.log({ response })
 		if (response.ok) {
-			return response.json();
+			if (response.status === 200) {
+				return response.json();
+			} else {
+				return null;
+			}
 		}
 		return null;
 	} catch (e) {

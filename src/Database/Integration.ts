@@ -6,7 +6,7 @@ export class Integration extends Realm.Object {
 	key!: keyof typeof StorageKeys;
 	value!: string;
 
-	static create({ key, value }) {
+	static create({ key, value }: { key: string; value: string }) {
 		return {
 			_id: new Realm.BSON.ObjectID(),
 			key,
