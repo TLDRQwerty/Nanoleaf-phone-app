@@ -1,6 +1,6 @@
 import "./wdyr";
 import React from "react";
-import { SafeAreaView } from "react-native";
+import { SafeAreaView, View, Text } from "react-native";
 import Router from "./Router";
 import { NativeRouter } from "react-router-native";
 import { RealmProvider } from "./Database";

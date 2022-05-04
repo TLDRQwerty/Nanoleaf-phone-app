@@ -7,7 +7,7 @@ export default function useFindOrCreate(object: any, id: string, defaultValue: a
 	const dv = object.create(defaultValue);
 
 	useEffect(() => {
-		if (value == null) {
+		if (value.current == null) {
 			realm.write(() => {
 				value.current = realm.create(object, dv);
 			});

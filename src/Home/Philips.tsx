@@ -3,6 +3,7 @@ import { View, Text } from "react-native";
 import { Integration, useObject } from "../Database";
 import useInfo from "../hooks/queries/philips/use-info";
 import tw from "../tailwind";
+import Pressable from "../ui/Pressable";
 import { StorageKeys } from "../utils/localStorage";
 
 export default function Philips() {
@@ -10,7 +11,7 @@ export default function Philips() {
 	const ipAddress = useObject(Integration, StorageKeys.PHILIPS.IP_ADDRESS)?.value || "";
 	const clientKey = useObject(Integration, StorageKeys.PHILIPS.CLIENT_KEY)?.value || "";
 
-	const info = useInfo()
+	const info = useInfo();
 
 	return (
 		<View style={tw`shadow rounded bg-gray-50 p-4 m-4`}>
@@ -27,8 +28,6 @@ export default function Philips() {
 				<Text>Auth Token: </Text>
 				<Text>{authToken}</Text>
 			</Text>
-
-			<Text>{}</Text>
 		</View>
 	);
 }

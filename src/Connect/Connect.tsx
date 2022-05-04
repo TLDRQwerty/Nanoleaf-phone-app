@@ -47,10 +47,8 @@ function Connect() {
 				generateclientkey: true,
 			}),
 		});
-		console.log({ response });
 		if (response) {
 			const [value] = response;
-			console.log(value);
 			realm.write(() => {
 				realm.create(
 					Integration,

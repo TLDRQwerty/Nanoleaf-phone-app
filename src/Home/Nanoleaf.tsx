@@ -2,11 +2,11 @@ import React, { useState } from "react";
 import { View } from "react-native";
 import { Integration, useObject } from "../Database";
 import useInfo from "../hooks/queries/nanoleaf/use-info";
-import useTogglePower from "../hooks/queries/use-toggle-power";
 import tw from "../tailwind";
 import Text from "../ui/Text";
 import Pressable from "../ui/Pressable";
 import { StorageKeys } from "../utils/localStorage";
+import useApi, { PATHS } from "../hooks/use-api";
 
 export default function Nanoleaf() {
 	const authToken = useObject(Integration, StorageKeys.NANOLEAF.AUTH_TOKEN)?.value || "";
@@ -14,7 +14,7 @@ export default function Nanoleaf() {
 	const r = useInfo();
 	const [on, setOn] = useState(r?.state.on.value || false);
 
-	useTogglePower("NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
+	useApi(PATHS.nanoleaf.state, "NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
 
 	return (
 		<View style={tw`p-4 m-4 bg-gray-50 rounded shadow`}>

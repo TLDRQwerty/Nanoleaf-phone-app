@@ -47,7 +47,6 @@
     "typescript": "^3.8.3"
   },
   "resolutions": {
-    "react-devtools-core": "4.14.0",
     "@types/react": "^17"
   },
   "jest": {
