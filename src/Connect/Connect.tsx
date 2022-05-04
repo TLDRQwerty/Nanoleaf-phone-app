@@ -54,6 +54,7 @@ function Connect() {
 				generateclientkey: true,
 			}),
 		});
+		console.log({ response })
 		if (response) {
 			const [value] = response;
 			realm.write(() => {

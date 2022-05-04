@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import { Integration, useObject } from "../Database";
-import useInfo from "../hooks/queries/philips/use-info";
 import useApi, { PATHS } from "../hooks/use-api";
 import tw from "../tailwind";
 import Pressable from "../ui/Pressable";
@@ -21,7 +20,7 @@ export default function Philips() {
 			if (request.readyState !== 4) {
 				return;
 			}
-			console.log({ request })
+			console.log({ request });
 
 			if (request.status === 200) {
 				console.log("success", request.responseText);
@@ -29,10 +28,9 @@ export default function Philips() {
 				console.warn("error");
 			}
 		};
-	request.onerror = (e) => console.log(e)
-	request.open("GET", `https://192.168.0.204/clip/v2/resource/device`);
-	request.send();
-
+		request.onerror = (e) => console.log(e);
+		request.open("GET", `https://192.168.0.204/clip/v2/resource/device`);
+		request.send();
 	});
 
 	return (
@@ -44,7 +42,7 @@ export default function Philips() {
 			</Text>
 			<Text style={tw`text-xs`}>
 				<Text>Client Key: </Text>
-				<Text>{clientKey}</Text>
+				<Text >{clientKey}</Text>
 			</Text>
 			<Text style={tw`text-xs`}>
 				<Text>Auth Token: </Text>
