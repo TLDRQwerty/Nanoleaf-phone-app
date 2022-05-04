@@ -11,8 +11,9 @@ import useApi, { PATHS } from "../hooks/use-api";
 export default function Nanoleaf() {
 	const authToken = useObject(Integration, StorageKeys.NANOLEAF.AUTH_TOKEN)?.value || "";
 	const ipAddress = useObject(Integration, StorageKeys.NANOLEAF.IP_ADDRESS)?.value || "";
-	const r = useInfo();
-	const [on, setOn] = useState(r?.state.on.value || false);
+
+	const [info] = useApi(PATHS.nanoleaf.info, "NANOLEAF", { method: "GET" });
+	const [on, setOn] = useState(info?.state.on.value || false);
 
 	useApi(PATHS.nanoleaf.state, "NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
 
@@ -30,9 +31,9 @@ export default function Nanoleaf() {
 				</Text>
 			</View>
 
-			{r && (
+			{info && (
 				<View>
-					<Text>{r.name}</Text>
+					<Text>{info.name}</Text>
 					<Pressable style={tw`flex-row`} onPress={() => setOn((p) => !p)}>
 						<Text>Power: </Text>
 						<Text>{on ? "On" : "Off"}</Text>

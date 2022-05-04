@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View } from "react-native";
 import Pressable from "../ui/Pressable";
 import TextInput from "../ui/TextInput";
@@ -24,6 +24,13 @@ function Connect() {
 		{ key: StorageKeys.PHILIPS.IP_ADDRESS, value: "" },
 		(v, newValue) => (v.value = newValue)
 	);
+
+	useEffect(() => {
+		(async () => {
+			const response = await fetch('https://192.168.0.204/api')
+			console.log(await response.json())
+		})()
+	}, [])
 
 	const handleNanoleafPress = async () => {
 		const response = await api<{ auth_token: string }>(`http://${nanoleaf.value}:16021/api/v1/new`, {

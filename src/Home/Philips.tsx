@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text } from "react-native";
 import { Integration, useObject } from "../Database";
 import useInfo from "../hooks/queries/philips/use-info";
+import useApi, { PATHS } from "../hooks/use-api";
 import tw from "../tailwind";
 import Pressable from "../ui/Pressable";
 import { StorageKeys } from "../utils/localStorage";
@@ -11,7 +12,28 @@ export default function Philips() {
 	const ipAddress = useObject(Integration, StorageKeys.PHILIPS.IP_ADDRESS)?.value || "";
 	const clientKey = useObject(Integration, StorageKeys.PHILIPS.CLIENT_KEY)?.value || "";
 
-	const info = useInfo();
+	const [info] = useApi(PATHS.philips.devices, "PHILIPS", { method: "GET" });
+	console.log({ info });
+
+	useEffect(() => {
+		var request = new XMLHttpRequest();
+		request.onreadystatechange = (e) => {
+			if (request.readyState !== 4) {
+				return;
+			}
+			console.log({ request })
+
+			if (request.status === 200) {
+				console.log("success", request.responseText);
+			} else {
+				console.warn("error");
+			}
+		};
+	request.onerror = (e) => console.log(e)
+	request.open("GET", `https://192.168.0.204/clip/v2/resource/device`);
+	request.send();
+
+	});
 
 	return (
 		<View style={tw`shadow rounded bg-gray-50 p-4 m-4`}>

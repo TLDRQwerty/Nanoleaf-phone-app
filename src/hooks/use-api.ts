@@ -1,7 +1,7 @@
 import { StorageKeys } from "./../utils/localStorage";
 import { SUPPORTED_TYPES } from "./../types";
 import { Integration } from "./../Database/Integration";
-import { useObject, useQuery } from "../Database";
+import { useObject } from "../Database";
 import api from "../utils/api/api";
 import { useEffect, useState } from "react";
 
@@ -28,7 +28,7 @@ export const PATHS = Object.freeze({
 
 export const END_POINTS: { [K in SUPPORTED_TYPES]: (ip: string, token: string, path: string) => string } = {
 	NANOLEAF: (ip, token, path) => `http://${ip}:16021/api/v1/${token}/${path}`,
-	PHILIPS: (ip, username, path) => `https://${ip}:443/${path}`,
+	PHILIPS: (ip, username, path) => `https://${ip}/${path}`,
 };
 
 export default function useApi<R extends Object | Array<Object>>(
@@ -51,13 +51,11 @@ export default function useApi<R extends Object | Array<Object>>(
 				throw Error();
 			}
 			if (type === "PHILIPS") {
-				console.log(auth.value);
 				options.headers = new Headers();
 				options.headers.append("hue-application-key", auth.value);
 			}
 
 			const url = `${END_POINTS[type](ip.value, auth.value, path)}`;
-			console.log(url, options);
 
 			const r = await api<R>(url, {
 				...options,
