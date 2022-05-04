@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { View } from "react-native";
 import { Integration, useObject } from "../Database";
-import useInfo from "../hooks/queries/nanoleaf/use-info";
 import tw from "../tailwind";
 import Text from "../ui/Text";
 import Pressable from "../ui/Pressable";
