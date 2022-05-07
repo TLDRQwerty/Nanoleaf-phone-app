@@ -1,10 +1,10 @@
-import React from "react";
-import CSlider, { SliderProps } from "@react-native-community/slider";
+import React, { ComponentProps, useEffect } from "react";
+import CSlider  from "@react-native-community/slider";
 import { View } from "react-native";
 import Text from "../ui/Text";
 import tw from "../tailwind";
 
-type Props = { label: string } & SliderProps;
+type Props = { label: string } & ComponentProps<typeof CSlider>;
 
 function Slider({ label, ...rest }: Props) {
 	return (

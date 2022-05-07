@@ -2542,6 +2542,11 @@ class-utils@^0.3.5:
     isobject "^3.0.0"
     static-extend "^0.1.1"
 
+class-variance-authority@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/class-variance-authority/-/class-variance-authority-0.2.1.tgz#4c0b857456056e842e2bb0e63620a2a554ed0575"
+  integrity sha512-1saIFSnCyvtc/piraDhejwrPRd2P6btFaDSMy3/UwoitCX3tBcpJt4+hGuK82FoojN+qEkGgGgexfZpNWMrD5w==
+
 cli-cursor@^2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/cli-cursor/-/cli-cursor-2.1.0.tgz#b35dac376479facc3e94747d41d0d0f5238ffcb5"
@@ -7045,7 +7050,15 @@ rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-devtools-core@4.14.0, react-devtools-core@^4.23.0, react-devtools-core@^4.6.0:
+react-devtools-core@^4.23.0:
+  version "4.24.4"
+  resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.24.4.tgz#adaa54569f87ce7c08384d12e0b35122a755cbae"
+  integrity sha512-jbX8Yqyq4YvFEobHyXVlGaH0Cs/+EOdb3PL911bxaR5BnzbB5TE4RFHC1iOgT4vRH3VxIIrVQ7lR9vsiFFCYCA==
+  dependencies:
+    shell-quote "^1.6.1"
+    ws "^7"
+
+react-devtools-core@^4.6.0:
   version "4.14.0"
   resolved "https://registry.yarnpkg.com/react-devtools-core/-/react-devtools-core-4.14.0.tgz#4b9dc50937ed4cf4c04fa293430cac62d829fa8b"
   integrity sha512-cE7tkSUkGCDxTA79pntDGJCBgzNN/XxA3kgPdXujdfSfEfVhzrItQIEsN0kCN/hJJACDvH2Q8p5+tJb/K4B3qA==
@@ -7099,7 +7112,7 @@ react-native-gradle-plugin@^0.0.6:
   resolved "https://registry.yarnpkg.com/react-native-gradle-plugin/-/react-native-gradle-plugin-0.0.6.tgz#b61a9234ad2f61430937911003cddd7e15c72b45"
   integrity sha512-eIlgtsmDp1jLC24dRn43hB3kEcZVqx6DUQbR0N1ABXGnMEafm9I3V3dUUeD1vh+Dy5WqijSoEwLNUPLgu5zDMg==
 
-react-native-heroicons@^2.0.2:
+react-native-heroicons@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/react-native-heroicons/-/react-native-heroicons-2.2.0.tgz#69bb63199aae24c24b7a4d0d83ac214cf276aa1f"
   integrity sha512-eOtuO6m8xgiq+q3RX47V9pc2OVrXo7a/DJmrHZBKs3GYFqrRidQqLgEYNRT4JwC+nDBHbflf3hpaBoPRXDFQzA==

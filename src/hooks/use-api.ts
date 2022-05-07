@@ -20,15 +20,16 @@ export const PATHS = Object.freeze({
 		effectsSelect: "effects/select",
 	},
 	philips: {
-		api: "api",
-		devices: "clip/v2/resource/device",
-		change: (lightNumber: number) => `light/${lightNumber}`,
+		api: "",
+		newdeveloper: 'api/newdeveloper',
+		light: (lightNumber: number) => `lights/${lightNumber}`,
+		lightState: (lightNumber: number) => `lights/${lightNumber}/state`
 	},
 } as const);
 
 export const END_POINTS: { [K in SUPPORTED_TYPES]: (ip: string, token: string, path: string) => string } = {
 	NANOLEAF: (ip, token, path) => `http://${ip}:16021/api/v1/${token}/${path}`,
-	PHILIPS: (ip, username, path) => `https://${ip}/${path}`,
+	PHILIPS: (ip, username, path) => `http://${ip}/api/${username}/${path}`,
 };
 
 export default function useApi<R extends Object | Array<Object>>(
@@ -50,10 +51,10 @@ export default function useApi<R extends Object | Array<Object>>(
 			if (auth == null) {
 				throw Error();
 			}
-			if (type === "PHILIPS") {
-				options.headers = new Headers();
-				options.headers.append("hue-application-key", auth.value);
-			}
+			// if (type === "PHILIPS") {
+			// 	options.headers = new Headers();
+			// 	options.headers.append("hue-application-key", auth.value);
+			// }
 
 			const url = `${END_POINTS[type](ip.value, auth.value, path)}`;
 

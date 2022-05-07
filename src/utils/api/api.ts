@@ -4,7 +4,6 @@ type ApiOptions = {
 };
 
 async function api<R extends Object | Array<Object>>(url: string, options: RequestInit): Promise<R | null> {
-	console.log({ url, options });
 	const response = await fetch(url, options);
 
 	if (response.ok) {

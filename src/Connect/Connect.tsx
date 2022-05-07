@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { View } from "react-native";
 import Pressable from "../ui/Pressable";
 import TextInput from "../ui/TextInput";
-import api, { PATHS } from "../utils/api/api";
+import api from "../utils/api/api";
 import { StorageKeys } from "../utils/localStorage";
 import tw from "../tailwind";
 import Page from "../ui/Page";
@@ -24,13 +24,6 @@ function Connect() {
 		{ key: StorageKeys.PHILIPS.IP_ADDRESS, value: "" },
 		(v, newValue) => (v.value = newValue)
 	);
-
-	useEffect(() => {
-		(async () => {
-			const response = await fetch('https://192.168.0.204/api')
-			console.log(await response.json())
-		})()
-	}, [])
 
 	const handleNanoleafPress = async () => {
 		const response = await api<{ auth_token: string }>(`http://${nanoleaf.value}:16021/api/v1/new`, {
@@ -54,7 +47,6 @@ function Connect() {
 				generateclientkey: true,
 			}),
 		});
-		console.log({ response })
 		if (response) {
 			const [value] = response;
 			realm.write(() => {
@@ -78,7 +70,7 @@ function Connect() {
 					<View style={tw`border-b border-gray-200 my-2 p-4 `}>
 						<Text>Nanoleaf</Text>
 						<TextInput style={tw`mb-3`} value={nanoleaf.value} onChangeText={setNanoleaf} placeholder="192.168.x.x" />
-						<Pressable onPress={handleNanoleafPress}>Connect</Pressable>
+						<Pressable type="outline" onPress={handleNanoleafPress}>Connect</Pressable>
 					</View>
 					<View style={tw`p-4`}>
 						<Text>Philips</Text>
