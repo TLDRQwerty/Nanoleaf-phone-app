@@ -1,7 +1,7 @@
 import React, { createContext, Dispatch, useContext, useEffect, useReducer, useState } from "react";
 import { View } from "react-native";
 import { Integration, useObject } from "../Database";
-import useApi, { PATHS } from "../hooks/use-api";
+import useApi, { ROUTES } from "../hooks/use-api";
 import tw from "../tailwind";
 import Pressable from "../ui/Pressable";
 import Text from "../ui/Text";
@@ -55,7 +55,7 @@ function Philips() {
 	const ipAddress = useObject(Integration, StorageKeys.PHILIPS.IP_ADDRESS)?.value || "";
 	const clientKey = useObject(Integration, StorageKeys.PHILIPS.CLIENT_KEY)?.value || "";
 
-	const [info] = useApi<Info>(PATHS.philips.api, "PHILIPS", { method: "GET" });
+	const [info] = useApi<Info>(ROUTES.philips.api, "PHILIPS", { method: "GET" });
 	const [, dispatch] = usePhilipsContext();
 
 	useEffect(() => {
@@ -118,14 +118,14 @@ function Group({ id }: { id: string }) {
 			<View style={tw`flex flex-row items-center justify-between`}>
 			<Text>{group.name}</Text>
 				<View>
-					<Power endpoint={PATHS.philips.group.setAction(id)} />
+					<Power endpoint={ROUTES.philips.group.setAction(id)} />
 				</View>
 			</View>
 			<View style={tw`pb-2`}>
-				<Scenes endpoint={PATHS.philips.group.setAction(id)} />
+				<Scenes endpoint={ROUTES.philips.group.setAction(id)} />
 			</View>
 			<View>
-				<Controls endpoint={PATHS.philips.group.setAction(id)} />
+				<Controls endpoint={ROUTES.philips.group.setAction(id)} />
 			</View>
 		</View>
 	);
@@ -144,10 +144,10 @@ function Light({ id }: { id: string }) {
 			<View style={tw`flex flex-row items-center justify-between`}>
 				<Text>{info.name}</Text>
 				<View>
-					<Power endpoint={PATHS.philips.light.set(id)} />
+					<Power endpoint={ROUTES.philips.light.set(id)} />
 				</View>
 			</View>
-			<Controls endpoint={PATHS.philips.light.set(id)} />
+			<Controls endpoint={ROUTES.philips.light.set(id)} />
 		</View>
 	);
 }
@@ -167,7 +167,7 @@ function Scenes({ endpoint }: { endpoint: unknown }) {
 		[]
 	);
 
-	options.push({ name: "none", key: "none" });
+	options.push({ name: "none", id: "none" });
 
 	return (
 		<Chips options={options}>

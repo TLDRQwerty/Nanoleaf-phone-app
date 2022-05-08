@@ -41,7 +41,7 @@ export interface Light {
 	swversion: string;
 }
 
-interface State {
+export interface State {
 	on: boolean;
 	bri: number;
 	hue: number;

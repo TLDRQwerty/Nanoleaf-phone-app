@@ -5,7 +5,7 @@ import tw from "../tailwind";
 import Text from "../ui/Text";
 import Pressable from "../ui/Pressable";
 import { StorageKeys } from "../utils/localStorage";
-import useApi, { PATHS } from "../hooks/use-api";
+import useApi, { ROUTES } from "../hooks/use-api";
 import { Info } from "../utils/api/NanoleafTypes";
 import Chips from "../ui/Chips";
 import Slider from "../ui/Slider";
@@ -52,7 +52,7 @@ function Nanoleaf() {
 	const authToken = useObject(Integration, StorageKeys.NANOLEAF.AUTH_TOKEN)?.value || "";
 	const ipAddress = useObject(Integration, StorageKeys.NANOLEAF.IP_ADDRESS)?.value || "";
 
-	const [info] = useApi<Info>(PATHS.nanoleaf.info, "NANOLEAF", { method: "GET" });
+	const [info] = useApi<Info>(ROUTES.nanoleaf.info, "NANOLEAF", { method: "GET" });
 	const [, dispatch] = useNanoleafContext();
 
 	useEffect(() => {
@@ -86,7 +86,7 @@ function Nanoleaf() {
 function Power() {
 	const [state] = useNanoleafContext();
 	const [on, setOn] = useState(state.info?.state.on.value || false);
-	useApi(PATHS.nanoleaf.state, "NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
+	useApi(ROUTES.nanoleaf.state, "NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
 	if (state.info == null) {
 		return null;
 	}
@@ -122,7 +122,7 @@ function Effects() {
 	const effects = state.info?.effects;
 	const [selected, setSelected] = useState(effects?.select || null);
 
-	useApi(PATHS.nanoleaf.effects, "NANOLEAF", { method: "PUT", body: JSON.stringify({ select: selected }) });
+	useApi(ROUTES.nanoleaf.effects, "NANOLEAF", { method: "PUT", body: JSON.stringify({ select: selected }) });
 
 	if (effects?.effectsList == null) {
 		return null;
@@ -158,7 +158,7 @@ function Controls() {
 		setSaturation(r?.sat.value);
 	}, [jr]);
 
-	useApi(PATHS.nanoleaf.state, "NANOLEAF", {
+	useApi(ROUTES.nanoleaf.state, "NANOLEAF", {
 		method: "PUT",
 		body: JSON.stringify({
 			brightness: {
@@ -166,7 +166,7 @@ function Controls() {
 			},
 		}),
 	});
-	useApi(PATHS.nanoleaf.state, "NANOLEAF", {
+	useApi(ROUTES.nanoleaf.state, "NANOLEAF", {
 		method: "PUT",
 		body: JSON.stringify({
 			hue: {
@@ -174,7 +174,7 @@ function Controls() {
 			},
 		}),
 	});
-	useApi(PATHS.nanoleaf.state, "NANOLEAF", {
+	useApi(ROUTES.nanoleaf.state, "NANOLEAF", {
 		method: "PUT",
 		body: JSON.stringify({
 			sat: {
@@ -182,7 +182,7 @@ function Controls() {
 			},
 		}),
 	});
-	useApi(PATHS.nanoleaf.state, "NANOLEAF", {
+	useApi(ROUTES.nanoleaf.state, "NANOLEAF", {
 		method: "PUT",
 		body: JSON.stringify({
 			ct: {

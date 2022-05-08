@@ -4,8 +4,9 @@ import { Integration } from "./../Database/Integration";
 import { useObject } from "../Database";
 import api from "../utils/api/api";
 import { useEffect, useState } from "react";
+import * as Philips from "../utils/api/PhilipsTypes";
 
-export const PATHS = Object.freeze({
+export const ROUTES = Object.freeze({
 	nanoleaf: {
 		new: "new",
 		info: "",
@@ -21,7 +22,7 @@ export const PATHS = Object.freeze({
 	},
 	philips: {
 		api: "",
-		newdeveloper: 'api/newdeveloper',
+		newdeveloper: "api/newdeveloper",
 		light: {
 			get: (id: string) => `lights/${id}`,
 			set: (id: string) => `lights/${id}/state`,
@@ -29,7 +30,7 @@ export const PATHS = Object.freeze({
 		group: {
 			get: (id: string) => `groups/${id}`,
 			setAction: (id: string) => `groups/${id}/action`,
-		}
+		},
 	},
 } as const);
 
