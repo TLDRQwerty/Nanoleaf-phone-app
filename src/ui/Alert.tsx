@@ -6,9 +6,9 @@ import tw from "../tailwind";
 const alert = cva("border rounded p-2 m-2", {
 	variants: {
 		type: {
-			info: "bg-blue-50 border-blue-200",
-			warning: "bg-yellow-50 border-yellow-200",
-			error: "bg-red-50 border-red-200",
+			info: "bg-blue-50 border-blue-200 dark:bg-blue-600 dark:border-blue-500",
+			warning: "bg-yellow-50 border-yellow-200 dark:bg-yellow-600 dark:border-yellow-500",
+			error: "bg-red-50 border-red-200 dark:bg-red-600 dark:border-red-100",
 		},
 	},
 });
@@ -20,9 +20,9 @@ function Alert({ children, type }: { children: ReactNode } & VariantProps<typeof
 const title = cva("font-bold", {
 	variants: {
 		type: {
-			info: "text-blue-800",
-			warning: "text-yellow-500",
-			error: "text-red-500",
+			info: "text-blue-500 dark:text-blue-100",
+			warning: "text-yellow-500 dark:text-yellow-100",
+			error: "text-red-500 dark:text-red-200",
 		},
 	},
 });
@@ -35,9 +35,9 @@ function Title({ children }: { children: ReactNode }) {
 const description = cva("", {
 	variants: {
 		type: {
-			info: "text-blue-400",
-			warning: "text-yellow-400",
-			error: "text-red-400",
+			info: "text-blue-400 dark:text-blue-100",
+			warning: "text-yellow-400 dark:text-yellow-100",
+			error: "text-red-400 dark:text-red-50",
 		},
 	},
 });
