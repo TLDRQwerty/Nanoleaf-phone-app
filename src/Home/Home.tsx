@@ -1,7 +1,8 @@
 import React from "react";
-import { ScrollView, Text } from "react-native";
+import { ScrollView } from "react-native";
 import { Link } from "react-router-native";
 import Page from "../ui/Page";
+import Text from "../ui/Text";
 import Nanoleaf from "./Nanoleaf";
 import Philips from "./Philips";
 

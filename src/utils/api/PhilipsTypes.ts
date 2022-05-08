@@ -1,5 +1,7 @@
 export interface Info {
-	lights: { [key: number]: Light };
+	lights: { [key: string]: Light };
+	scenes: { [key: string]: Scene };
+	groups: { [key: string]: Group };
 }
 
 export interface Light {
@@ -44,11 +46,33 @@ interface State {
 	bri: number;
 	hue: number;
 	sat: number;
-	effect: string;
+	effect: "none" | "colorloop";
 	xy: [number, number];
 	ct: number;
 	alert: string;
 	colormode: string;
 	mode: string;
 	reachable: boolean;
+}
+
+export interface Scene {
+	name: string;
+	type: "LightScene" | "GroupScene";
+	group: string;
+	lights: Array<number>;
+	owner: string;
+	recycle: boolean;
+	locked: boolean;
+	appdata: { version: number; data: string };
+	picture: string;
+	image: string;
+	lastupdated: string;
+	version: number;
+}
+
+interface Group {
+	name: string;
+	lights: number[];
+	type: "Luminaire" | "LightSource" | "LightGroup" | "Room" | "Entertainment" | "Zone";
+	action: State & { effect: string | "none" };
 }

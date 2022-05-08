@@ -22,8 +22,14 @@ export const PATHS = Object.freeze({
 	philips: {
 		api: "",
 		newdeveloper: 'api/newdeveloper',
-		light: (lightNumber: number) => `lights/${lightNumber}`,
-		lightState: (lightNumber: number) => `lights/${lightNumber}/state`
+		light: {
+			get: (id: string) => `lights/${id}`,
+			set: (id: string) => `lights/${id}/state`,
+		},
+		group: {
+			get: (id: string) => `groups/${id}`,
+			setAction: (id: string) => `groups/${id}/action`,
+		}
 	},
 } as const);
 
@@ -57,13 +63,14 @@ export default function useApi<R extends Object | Array<Object>>(
 			// }
 
 			const url = `${END_POINTS[type](ip.value, auth.value, path)}`;
+			// console.log({ url, options })
 
 			const r = await api<R>(url, {
 				...options,
 			});
 			setResponse(r);
 		})();
-	}, [bodyOptions]);
+	}, [bodyOptions, path]);
 
 	return [response];
 }

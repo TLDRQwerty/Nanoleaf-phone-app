@@ -9,6 +9,7 @@ import useApi, { PATHS } from "../hooks/use-api";
 import { Info } from "../utils/api/NanoleafTypes";
 import Chips from "../ui/Chips";
 import Slider from "../ui/Slider";
+import Card from "../ui/Card";
 
 interface State {
 	info: Info | null;
@@ -52,15 +53,20 @@ function Nanoleaf() {
 	const ipAddress = useObject(Integration, StorageKeys.NANOLEAF.IP_ADDRESS)?.value || "";
 
 	const [info] = useApi<Info>(PATHS.nanoleaf.info, "NANOLEAF", { method: "GET" });
-	const [,dispatch] = useNanoleafContext();
+	const [, dispatch] = useNanoleafContext();
 
 	useEffect(() => {
 		dispatch({ type: ActionTypes.SetInformation, info: info });
 	}, [info]);
 
 	return (
-		<View style={tw`p-4 m-4 bg-gray-50 rounded shadow`}>
-			<Text style={tw`text-center text-primary-800 font-bold`}>Nanoleaf</Text>
+		<Card>
+			<View style={tw`flex-row flex flex-1 justify-between items-center`}>
+				<Text style={tw`text-center font-bold`}>Nanoleaf</Text>
+				<View>
+					<Power />
+				</View>
+			</View>
 			<View style={tw`mb-4`}>
 				<Text style={tw`text-xs`}>
 					<Text>IP Address: </Text>
@@ -73,33 +79,37 @@ function Nanoleaf() {
 			</View>
 
 			<Information />
-		</View>
+		</Card>
+	);
+}
+
+function Power() {
+	const [state] = useNanoleafContext();
+	const [on, setOn] = useState(state.info?.state.on.value || false);
+	useApi(PATHS.nanoleaf.state, "NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
+	if (state.info == null) {
+		return null;
+	}
+	const type = on ? "filled" : "tonal";
+	return (
+		<Pressable style={tw`mb-2`} type={type} onPress={() => setOn((p) => !p)}>
+			<Text style={Pressable.text({ type })}>{on ? "On" : "Off"}</Text>
+		</Pressable>
 	);
 }
 
 function Information() {
-	const [state] = useNanoleafContext()
-	const [on, setOn] = useState(state.info?.state.on.value || false);
-
-	useApi(PATHS.nanoleaf.state, "NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
+	const [state] = useNanoleafContext();
 
 	if (state.info == null) {
 		return null;
 	}
-
-	const type = on ? "filled" : "tonal";
 
 	return (
 		<View style={tw`flex-1`}>
 			<View style={tw`mb-2`}>
 				<Text>{state.info.name}</Text>
 			</View>
-			<Pressable style={tw`mb-2`} type={type} onPress={() => setOn((p) => !p)}>
-				<Text style={Pressable.text({ type })}>
-					Power:
-					{on ? "On" : "Off"}
-				</Text>
-			</Pressable>
 			<Effects />
 
 			<Controls />
@@ -108,8 +118,8 @@ function Information() {
 }
 
 function Effects() {
-	const [state] = useNanoleafContext()
-	const effects = state.info?.effects
+	const [state] = useNanoleafContext();
+	const effects = state.info?.effects;
 	const [selected, setSelected] = useState(effects?.select || null);
 
 	useApi(PATHS.nanoleaf.effects, "NANOLEAF", { method: "PUT", body: JSON.stringify({ select: selected }) });
@@ -130,8 +140,8 @@ function Effects() {
 }
 
 function Controls() {
-	const [state] = useNanoleafContext()
-	const r = state.info?.state
+	const [state] = useNanoleafContext();
+	const r = state.info?.state;
 	const [brightness, setBrightness] = useState(r?.brightness.value || 0);
 	const [colorTemperature, setColorTemperature] = useState(r?.ct.value || 0);
 	const [hue, setHue] = useState(r?.hue.value || 0);

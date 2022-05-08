@@ -8,6 +8,9 @@ import Text from "../ui/Text";
 import { StorageKeys } from "../utils/localStorage";
 import { Info } from "../utils/api/PhilipsTypes";
 import Slider from "../ui/Slider";
+import Card from "../ui/Card";
+import Chips from "../ui/Chips";
+import Toggle from "../ui/Toggle";
 
 interface State {
 	info: Info | null;
@@ -60,8 +63,8 @@ function Philips() {
 	}, [info]);
 
 	return (
-		<View style={tw`shadow rounded bg-gray-50 p-4 m-4`}>
-			<Text style={tw`text-center text-primary-800 font-bold`}>Philips Hue</Text>
+		<Card>
+			<Text style={tw`font-bold`}>Philips Hue</Text>
 			<Text style={tw`text-xs`}>
 				<Text>IP Address: </Text>
 				<Text>{ipAddress}</Text>
@@ -76,7 +79,7 @@ function Philips() {
 			</Text>
 
 			<Information />
-		</View>
+		</Card>
 	);
 }
 
@@ -90,30 +93,47 @@ function Information() {
 	return (
 		<View>
 			<View>
-				{Object.values(state.info.lights).map((light, idx) => (
-					<Light key={light.uniqueid} id={idx + 1} />
+				{Object.keys(state.info.groups).map((key) => (
+					<Group key={key} id={key} />
+				))}
+				{Object.keys(state.info.lights).map((key) => (
+					<Light key={state.info?.lights[key].uniqueid} id={key} />
 				))}
 			</View>
 		</View>
 	);
 }
 
-function Light({ id }: { id: number }) {
+function Group({ id }: { id: string }) {
+	const [state] = usePhilipsContext();
+
+	const group = state.info?.groups[id];
+
+	if (state.info == null || group == null || group?.type !== "Room") {
+		return null;
+	}
+
+	return (
+		<View style={tw`pb-2`}>
+			<View style={tw`flex flex-row items-center justify-between`}>
+			<Text>{group.name}</Text>
+				<View>
+					<Power endpoint={PATHS.philips.group.setAction(id)} />
+				</View>
+			</View>
+			<View style={tw`pb-2`}>
+				<Scenes endpoint={PATHS.philips.group.setAction(id)} />
+			</View>
+			<View>
+				<Controls endpoint={PATHS.philips.group.setAction(id)} />
+			</View>
+		</View>
+	);
+}
+
+function Light({ id }: { id: string }) {
 	const [state] = usePhilipsContext();
 	const info = state.info?.lights[id];
-	const [on, setOn] = useState(false);
-
-	useApi(PATHS.philips.lightState(id), "PHILIPS", { method: "PUT", body: JSON.stringify({ on }) });
-
-	const type = on ? "filled" : "tonal";
-
-	const jr = JSON.stringify(info);
-	useEffect(() => {
-		if (info == null) {
-			return;
-		}
-		setOn(info.state.on);
-	}, [jr]);
 
 	if (info == null) {
 		return null;
@@ -121,38 +141,99 @@ function Light({ id }: { id: number }) {
 
 	return (
 		<View>
-			<Text>{info.name}</Text>
-			<Pressable type={type} onPress={() => setOn((o) => !o)}>
-				<Text style={Pressable.text({ type })}>{on ? "On" : "Off"}</Text>
-			</Pressable>
-			<Controls id={id} />
+			<View style={tw`flex flex-row items-center justify-between`}>
+				<Text>{info.name}</Text>
+				<View>
+					<Power endpoint={PATHS.philips.light.set(id)} />
+				</View>
+			</View>
+			<Controls endpoint={PATHS.philips.light.set(id)} />
 		</View>
 	);
 }
 
-function Controls({ id }: { id: number }) {
+function Scenes({ endpoint }: { endpoint: unknown }) {
+	const [state] = usePhilipsContext();
+	const [selected, setSelected] = useState<string | null>("none");
+
+	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ scene: selected }) });
+
+	if (state.info == null) {
+		return null;
+	}
+
+	const options: { id: string; name: string }[] = Object.keys(state.info.scenes).reduce(
+		(carry, value) => [...carry, { id: value, name: state.info?.scenes[value].name }],
+		[]
+	);
+
+	options.push({ name: "none", key: "none" });
+
+	return (
+		<Chips options={options}>
+			{({ id, name }) => (
+				<Chips.Chip value={id} key={id} selected={selected === id} onPress={setSelected}>
+					<Text>{name}</Text>
+				</Chips.Chip>
+			)}
+		</Chips>
+	);
+}
+
+function Power({ endpoint }: { endpoint: unknown}) {
+	const [state] = usePhilipsContext();
+	const [on, setOn] = useState(false);
+
+	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ on }) });
+
+	// const jr = JSON.stringify(info);
+
+	// useEffect(() => {
+	// 	if (info == null) {
+	// 		return;
+	// 	}
+	// 	setOn(info.state.on);
+	// }, [jr]);
+
+	const type = on ? "filled" : "tonal";
+
+	// if (info == null) {
+	// 	return null;
+	// }
+
+	return (
+		<Pressable type={type} onPress={() => setOn((o) => !o)}>
+			<Text style={Pressable.text({ type })}>{on ? "On" : "Off"}</Text>
+		</Pressable>
+	);
+}
+
+function Controls({ endpoint }: { endpoint: unknown }) {
 	const [state] = usePhilipsContext();
 	const [bri, setBri] = useState(0);
 	const [hue, setHue] = useState(0);
 	const [sat, setSat] = useState(0);
 	const [ct, setCt] = useState(0);
+	const [effect, setEffect] = useState<"none" | "colorloop">("none");
 
-	useApi(PATHS.philips.lightState(id), "PHILIPS", { method: "PUT", body: JSON.stringify({ bri }) });
-	useApi(PATHS.philips.lightState(id), "PHILIPS", { method: "PUT", body: JSON.stringify({ hue }) });
-	useApi(PATHS.philips.lightState(id), "PHILIPS", { method: "PUT", body: JSON.stringify({ ct }) });
-	useApi(PATHS.philips.lightState(id), "PHILIPS", { method: "PUT", body: JSON.stringify({ sat }) });
+	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ bri }) });
+	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ hue }) });
+	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ ct }) });
+	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ sat }) });
+	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ effect }) });
 
-	const jState = JSON.stringify(state.info?.lights[id].state);
-	useEffect(() => {
-		if (state.info == null) {
-			return;
-		}
+	// const jState = JSON.stringify(state.info?.lights[id].state);
+	// useEffect(() => {
+	// 	if (state.info == null) {
+	// 		return;
+	// 	}
 
-		setBri(state.info.lights[id].state.bri);
-		setSat(state.info.lights[id].state.sat);
-		setCt(state.info.lights[id].state.ct);
-		setHue(state.info.lights[id].state.hue);
-	}, [jState]);
+	// 	setBri(state.info.lights[id].state.bri);
+	// 	setSat(state.info.lights[id].state.sat);
+	// 	setCt(state.info.lights[id].state.ct);
+	// 	setHue(state.info.lights[id].state.hue);
+	// 	setEffect(state.info.lights[id].state.effect);
+	// }, [jState]);
 
 	if (state.info == null) {
 		return null;
@@ -161,6 +242,14 @@ function Controls({ id }: { id: number }) {
 	return (
 		<View>
 			<View>
+				<Toggle options={["none", "colorloop"]}>
+					<Toggle.Left value={"none"} selected={"none" === effect} onPress={setEffect}>
+						<Text>None</Text>
+					</Toggle.Left>
+					<Toggle.Right value={"colorloop"} selected={"colorloop" === effect} onPress={setEffect}>
+						<Text>colorloop</Text>
+					</Toggle.Right>
+				</Toggle>
 				<Slider label="Brightness" value={bri} onValueChange={setBri} minimumValue={1} maximumValue={254} step={1} />
 				<Slider label="Hue" value={hue} onValueChange={setHue} minimumValue={0} maximumValue={65535} step={1} />
 				<Slider

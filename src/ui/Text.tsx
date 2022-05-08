@@ -9,7 +9,7 @@ type Props = {
 
 function Text({ style, children, ...rest }: Props) {
 	return (
-		<NText style={tw.style("text-black", style)} {...rest}>
+		<NText style={tw.style("text-black dark:text-dark-primary-50", style)} {...rest}>
 			{children}
 		</NText>
 	);
