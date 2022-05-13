@@ -75,7 +75,7 @@ function Connect() {
 					<View style={tw`p-4`}>
 						<Text>Philips</Text>
 						<TextInput style={tw`mb-3`} value={philips.value} onChangeText={setPhilips} placeholder="192.168.x.x" />
-						<Pressable onPress={handlePhilipsPress}>Connect</Pressable>
+						<Pressable type="outline" onPress={handlePhilipsPress}>Connect</Pressable>
 					</View>
 				</View>
 			</View>

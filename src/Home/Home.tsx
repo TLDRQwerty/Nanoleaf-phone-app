@@ -2,6 +2,7 @@ import { NetInfoStateType, useNetInfo } from "@react-native-community/netinfo";
 import React from "react";
 import { ScrollView, View } from "react-native";
 import { Link } from "react-router-native";
+import useNetworkListener from "../hooks/use-network-listener";
 import tw from "../tailwind";
 import Alert from "../ui/Alert";
 import Page from "../ui/Page";
@@ -10,7 +11,7 @@ import Nanoleaf from "./Nanoleaf";
 import Philips from "./Philips";
 
 export default function Home() {
-	const netinfo = useNetInfo();
+	const netinfo = useNetworkListener();
 	return (
 		<Page
 			title="Home"

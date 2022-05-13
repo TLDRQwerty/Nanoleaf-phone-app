@@ -186,7 +186,7 @@ function Power({ endpoint }: { endpoint: unknown}) {
 
 	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ on }) });
 
-	// const jr = JSON.stringify(info);
+	// const jr = JSON.stringify(state.info);
 
 	// useEffect(() => {
 	// 	if (info == null) {

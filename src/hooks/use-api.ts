@@ -3,7 +3,7 @@ import { SUPPORTED_TYPES } from "./../types";
 import { Integration } from "./../Database/Integration";
 import { useObject } from "../Database";
 import api from "../utils/api/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import * as Philips from "../utils/api/PhilipsTypes";
 
 export const ROUTES = Object.freeze({
@@ -58,6 +58,7 @@ export default function useApi<R extends Object | Array<Object>>(
 			if (auth == null) {
 				throw Error();
 			}
+
 			// if (type === "PHILIPS") {
 			// 	options.headers = new Headers();
 			// 	options.headers.append("hue-application-key", auth.value);
