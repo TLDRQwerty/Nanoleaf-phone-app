@@ -86,11 +86,15 @@ function Nanoleaf() {
 function Power() {
 	const [state] = useNanoleafContext();
 	const [on, setOn] = useState(state.info?.state.on.value || false);
+
 	useApi(ROUTES.nanoleaf.state, "NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
+
 	if (state.info == null) {
 		return null;
 	}
+
 	const type = on ? "filled" : "tonal";
+
 	return (
 		<Pressable style={tw`mb-2`} type={type} onPress={() => setOn((p) => !p)}>
 			<Text style={Pressable.text({ type })}>{on ? "On" : "Off"}</Text>

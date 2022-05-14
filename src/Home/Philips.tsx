@@ -6,7 +6,7 @@ import tw from "../tailwind";
 import Pressable from "../ui/Pressable";
 import Text from "../ui/Text";
 import { StorageKeys } from "../utils/localStorage";
-import { Info } from "../utils/api/PhilipsTypes";
+import { Info, State as LightState } from "../utils/api/PhilipsTypes";
 import Slider from "../ui/Slider";
 import Card from "../ui/Card";
 import Chips from "../ui/Chips";
@@ -115,17 +115,17 @@ function Group({ id }: { id: string }) {
 
 	return (
 		<View style={tw`pb-2`}>
-			<View style={tw`flex flex-row items-center justify-between`}>
-			<Text>{group.name}</Text>
+			<View style={tw`flex flex-row items-center justify-between my-2`}>
+				<Text>{group.name}</Text>
 				<View>
-					<Power endpoint={ROUTES.philips.group.setAction(id)} />
+					<Power value={state.info.groups[id].action.on} endpoint={ROUTES.philips.group.setAction(id)} />
 				</View>
 			</View>
 			<View style={tw`pb-2`}>
 				<Scenes endpoint={ROUTES.philips.group.setAction(id)} />
 			</View>
 			<View>
-				<Controls endpoint={ROUTES.philips.group.setAction(id)} />
+				<Controls value={state.info.groups[id].action} endpoint={ROUTES.philips.group.setAction(id)} />
 			</View>
 		</View>
 	);
@@ -144,10 +144,10 @@ function Light({ id }: { id: string }) {
 			<View style={tw`flex flex-row items-center justify-between`}>
 				<Text>{info.name}</Text>
 				<View>
-					<Power endpoint={ROUTES.philips.light.set(id)} />
+					<Power value={info?.state.on} endpoint={ROUTES.philips.light.set(id)} />
 				</View>
 			</View>
-			<Controls endpoint={ROUTES.philips.light.set(id)} />
+			<Controls value={info.state} endpoint={ROUTES.philips.light.set(id)} />
 		</View>
 	);
 }
@@ -162,7 +162,7 @@ function Scenes({ endpoint }: { endpoint: unknown }) {
 		return null;
 	}
 
-	const options: { id: string; name: string }[] = Object.keys(state.info.scenes).reduce(
+	const options: { id: string; name: string | null }[] = Object.keys(state.info.scenes).reduce(
 		(carry, value) => [...carry, { id: value, name: state.info?.scenes[value].name }],
 		[]
 	);
@@ -180,60 +180,33 @@ function Scenes({ endpoint }: { endpoint: unknown }) {
 	);
 }
 
-function Power({ endpoint }: { endpoint: unknown}) {
-	const [state] = usePhilipsContext();
-	const [on, setOn] = useState(false);
+function Power({ endpoint, value }: { endpoint: string; value: boolean }) {
+	const [on, setOn] = useState(value);
 
-	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ on }) });
+	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ on: !on }) });
 
-	// const jr = JSON.stringify(state.info);
-
-	// useEffect(() => {
-	// 	if (info == null) {
-	// 		return;
-	// 	}
-	// 	setOn(info.state.on);
-	// }, [jr]);
-
-	const type = on ? "filled" : "tonal";
-
-	// if (info == null) {
-	// 	return null;
-	// }
+	const t = on ? "filled" : "tonal";
 
 	return (
-		<Pressable type={type} onPress={() => setOn((o) => !o)}>
-			<Text style={Pressable.text({ type })}>{on ? "On" : "Off"}</Text>
+		<Pressable type={t} onPress={() => setOn((o) => !o)}>
+			<Text style={Pressable.text({ type: t })}>{on ? "On" : "Off"}</Text>
 		</Pressable>
 	);
 }
 
-function Controls({ endpoint }: { endpoint: unknown }) {
+function Controls({ endpoint, value }: { endpoint: unknown; value: LightState }) {
 	const [state] = usePhilipsContext();
-	const [bri, setBri] = useState(0);
-	const [hue, setHue] = useState(0);
-	const [sat, setSat] = useState(0);
-	const [ct, setCt] = useState(0);
-	const [effect, setEffect] = useState<"none" | "colorloop">("none");
+	const [bri, setBri] = useState(value.bri);
+	const [hue, setHue] = useState(value.hue);
+	const [sat, setSat] = useState(value.sat);
+	const [ct, setCt] = useState(value.ct);
+	const [effect, setEffect] = useState<"none" | "colorloop">(value.effect);
 
 	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ bri }) });
 	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ hue }) });
 	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ ct }) });
 	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ sat }) });
 	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ effect }) });
-
-	// const jState = JSON.stringify(state.info?.lights[id].state);
-	// useEffect(() => {
-	// 	if (state.info == null) {
-	// 		return;
-	// 	}
-
-	// 	setBri(state.info.lights[id].state.bri);
-	// 	setSat(state.info.lights[id].state.sat);
-	// 	setCt(state.info.lights[id].state.ct);
-	// 	setHue(state.info.lights[id].state.hue);
-	// 	setEffect(state.info.lights[id].state.effect);
-	// }, [jState]);
 
 	if (state.info == null) {
 		return null;

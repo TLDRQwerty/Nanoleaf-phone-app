@@ -5,6 +5,7 @@ import { useObject } from "../Database";
 import api from "../utils/api/api";
 import { useEffect, useRef, useState } from "react";
 import * as Philips from "../utils/api/PhilipsTypes";
+import { useError } from "../ui/ErrorBoundary";
 
 export const ROUTES = Object.freeze({
 	nanoleaf: {
@@ -44,11 +45,12 @@ export default function useApi<R extends Object | Array<Object>>(
 	type: SUPPORTED_TYPES,
 	options: RequestInit
 ): [R | null] {
+	const renderError = useError();
 	const [response, setResponse] = useState<R | null>(null);
 	const ip = useObject(Integration, StorageKeys[type].IP_ADDRESS);
 	const auth = useObject(Integration, StorageKeys[type].AUTH_TOKEN);
 
-	const bodyOptions = JSON.stringify(options.body);
+	const bodyOptions = options.body
 	useEffect(() => {
 		(async () => {
 			if (ip == null) {
@@ -59,18 +61,19 @@ export default function useApi<R extends Object | Array<Object>>(
 				throw Error();
 			}
 
-			// if (type === "PHILIPS") {
-			// 	options.headers = new Headers();
-			// 	options.headers.append("hue-application-key", auth.value);
-			// }
-
 			const url = `${END_POINTS[type](ip.value, auth.value, path)}`;
-			// console.log({ url, options })
 
-			const r = await api<R>(url, {
+			const { json, error } = await api<R, unknown>(url, {
 				...options,
 			});
-			setResponse(r);
+
+			if (error) {
+				renderError({
+					title: "An Error Occurred",
+					description: typeof error != "string" ? JSON.stringify(error) : error,
+				});
+			}
+			setResponse(json);
 		})();
 	}, [bodyOptions, path]);
 

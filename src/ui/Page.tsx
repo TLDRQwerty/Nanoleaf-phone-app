@@ -3,6 +3,7 @@ import { Text, View, ScrollView } from "react-native";
 import tw from "../tailwind";
 import { ArrowSmLeftIcon } from "react-native-heroicons/solid";
 import { Link } from "react-router-native";
+import ErrorBoundary from "./ErrorBoundary";
 
 type Props = {
 	title: ReactNode;
@@ -28,10 +29,15 @@ function Page({ title, children, headerLeft, headerRight, scrollable = false }: 
 					{isValidElement(title) ? (
 						title
 					) : (
-						<Text style={tw`text-center font-bold text-lg text-primary-900 dark:text-dark-primary-300`}>{String(title)}</Text>
+						<Text style={tw`text-center font-bold text-lg text-primary-900 dark:text-dark-primary-300`}>
+							{String(title)}
+						</Text>
 					)}
 				</View>
 				<View style={tw`w-1/6 flex-row-reverse`}>{headerRight || <View />}</View>
+			</View>
+			<View>
+				<ErrorBoundary.Errors />
 			</View>
 			<Component style={tw`pb-4 bg-secondary-50 dark:bg-dark-primary-700 flex flex-1`}>{children}</Component>
 		</View>

@@ -17,7 +17,7 @@ function Alert({ children, type }: { children: ReactNode } & VariantProps<typeof
 	return <View style={tw.style(alert({ type }))}>{children}</View>;
 }
 
-const title = cva("font-bold", {
+const title = cva("font-bold capitalize", {
 	variants: {
 		type: {
 			info: "text-blue-500 dark:text-blue-100",

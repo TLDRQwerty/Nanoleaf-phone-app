@@ -9,8 +9,10 @@ import Page from "../ui/Page";
 import Text from "../ui/Text";
 import { Integration, useRealm } from "../Database";
 import useFindOrCreate from "../hooks/use-find-or-create";
+import { useError } from "../ui/ErrorBoundary";
 
 function Connect() {
+	const renderError = useError();
 	const realm = useRealm();
 	const [nanoleaf, setNanoleaf] = useFindOrCreate(
 		Integration,
@@ -26,29 +28,37 @@ function Connect() {
 	);
 
 	const handleNanoleafPress = async () => {
-		const response = await api<{ auth_token: string }>(`http://${nanoleaf.value}:16021/api/v1/new`, {
-			method: "POST",
-		});
-		if (response) {
+		const { json, error, response } = await api<{ auth_token: string }, any>(
+			`http://${nanoleaf.value}:16021/api/v1/new`,
+			{
+				method: "POST",
+			}
+		);
+		if (error) {
+			renderError({ title: "An error occurred", description: "The API failed to connect to nanoleaf" });
+			return
+		}
+		if (response?.ok) {
 			realm.write(() => {
-				realm.create(
-					Integration,
-					Integration.create({ key: StorageKeys.NANOLEAF.AUTH_TOKEN, value: response.auth_token })
-				);
+				realm.create(Integration, Integration.create({ key: StorageKeys.NANOLEAF.AUTH_TOKEN, value: json.auth_token }));
 			});
 		}
 	};
 
 	const handlePhilipsPress = async () => {
-		const response = await api(`http://${philips.value}/api`, {
+		const { response, json, error } = await api(`http://${philips.value}/api`, {
 			method: "POST",
 			body: JSON.stringify({
 				devicetype: "app_name#instance_name",
 				generateclientkey: true,
 			}),
 		});
-		if (response) {
-			const [value] = response;
+		if (error) {
+			renderError({ title: "An error occurred", description: "The API failed to connect to philips hue" });
+			return
+		}
+		if (response?.ok) {
+			const [value] = json;
 			realm.write(() => {
 				realm.create(
 					Integration,
@@ -70,12 +80,16 @@ function Connect() {
 					<View style={tw`border-b border-gray-200 my-2 p-4 `}>
 						<Text>Nanoleaf</Text>
 						<TextInput style={tw`mb-3`} value={nanoleaf.value} onChangeText={setNanoleaf} placeholder="192.168.x.x" />
-						<Pressable type="outline" onPress={handleNanoleafPress}>Connect</Pressable>
+						<Pressable type="outline" onPress={handleNanoleafPress}>
+							Connect
+						</Pressable>
 					</View>
 					<View style={tw`p-4`}>
 						<Text>Philips</Text>
 						<TextInput style={tw`mb-3`} value={philips.value} onChangeText={setPhilips} placeholder="192.168.x.x" />
-						<Pressable type="outline" onPress={handlePhilipsPress}>Connect</Pressable>
+						<Pressable type="outline" onPress={handlePhilipsPress}>
+							Connect
+						</Pressable>
 					</View>
 				</View>
 			</View>
