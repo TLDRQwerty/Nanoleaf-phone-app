@@ -47,7 +47,7 @@ function ErrorBoundary({ children }: { children: ReactNode }) {
 	const [state, dispatch] = useReducer((state: State, action: Actions) => reducers[action.type](state, action), {
 		errors: [],
 	});
-	return <ErrorContext.Provider value={[state, dispatch]}>{children}</ErrorContext.Provider>;
+	return <ErrorContext.Provider value={[state, dispatch]}>{React.useMemo(() => children, [])}</ErrorContext.Provider>;
 }
 
 function Errors() {

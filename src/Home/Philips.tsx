@@ -55,7 +55,7 @@ function Philips() {
 	const ipAddress = useObject(Integration, StorageKeys.PHILIPS.IP_ADDRESS)?.value || "";
 	const clientKey = useObject(Integration, StorageKeys.PHILIPS.CLIENT_KEY)?.value || "";
 
-	const [info] = useApi<Info>(ROUTES.philips.api, "PHILIPS", { method: "GET" });
+	const [info] = useApi<Info>(ROUTES.PHILIPS.api, "PHILIPS", { method: "GET" });
 	const [, dispatch] = usePhilipsContext();
 
 	useEffect(() => {
@@ -118,14 +118,14 @@ function Group({ id }: { id: string }) {
 			<View style={tw`flex flex-row items-center justify-between my-2`}>
 				<Text>{group.name}</Text>
 				<View>
-					<Power value={state.info.groups[id].action.on} endpoint={ROUTES.philips.group.setAction(id)} />
+					<Power value={state.info.groups[id].action.on} endpoint={ROUTES.PHILIPS.group.setAction(id)} />
 				</View>
 			</View>
 			<View style={tw`pb-2`}>
-				<Scenes endpoint={ROUTES.philips.group.setAction(id)} />
+				<Scenes endpoint={ROUTES.PHILIPS.group.setAction(id)} />
 			</View>
 			<View>
-				<Controls value={state.info.groups[id].action} endpoint={ROUTES.philips.group.setAction(id)} />
+				<Controls value={state.info.groups[id].action} endpoint={ROUTES.PHILIPS.group.setAction(id)} />
 			</View>
 		</View>
 	);
@@ -144,15 +144,15 @@ function Light({ id }: { id: string }) {
 			<View style={tw`flex flex-row items-center justify-between`}>
 				<Text>{info.name}</Text>
 				<View>
-					<Power value={info?.state.on} endpoint={ROUTES.philips.light.set(id)} />
+					<Power value={info?.state.on} endpoint={ROUTES.PHILIPS.light.set(id)} />
 				</View>
 			</View>
-			<Controls value={info.state} endpoint={ROUTES.philips.light.set(id)} />
+			<Controls value={info.state} endpoint={ROUTES.PHILIPS.light.set(id)} />
 		</View>
 	);
 }
 
-function Scenes({ endpoint }: { endpoint: unknown }) {
+function Scenes({ endpoint }: { endpoint: string }) {
 	const [state] = usePhilipsContext();
 	const [selected, setSelected] = useState<string | null>("none");
 
@@ -194,7 +194,7 @@ function Power({ endpoint, value }: { endpoint: string; value: boolean }) {
 	);
 }
 
-function Controls({ endpoint, value }: { endpoint: unknown; value: LightState }) {
+function Controls({ endpoint, value }: { endpoint: string; value: LightState }) {
 	const [state] = usePhilipsContext();
 	const [bri, setBri] = useState(value.bri);
 	const [hue, setHue] = useState(value.hue);

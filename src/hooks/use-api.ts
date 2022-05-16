@@ -4,11 +4,11 @@ import { Integration } from "./../Database/Integration";
 import { useObject } from "../Database";
 import api from "../utils/api/api";
 import { useEffect, useRef, useState } from "react";
-import * as Philips from "../utils/api/PhilipsTypes";
 import { useError } from "../ui/ErrorBoundary";
+import debounce from "../utils/debounce";
 
 export const ROUTES = Object.freeze({
-	nanoleaf: {
+	NANOLEAF: {
 		new: "new",
 		info: "",
 		state: "state",
@@ -21,7 +21,7 @@ export const ROUTES = Object.freeze({
 		effectsList: "effects/effectsList",
 		effectsSelect: "effects/select",
 	},
-	philips: {
+	PHILIPS: {
 		api: "",
 		newdeveloper: "api/newdeveloper",
 		light: {
@@ -49,8 +49,9 @@ export default function useApi<R extends Object | Array<Object>>(
 	const [response, setResponse] = useState<R | null>(null);
 	const ip = useObject(Integration, StorageKeys[type].IP_ADDRESS);
 	const auth = useObject(Integration, StorageKeys[type].AUTH_TOKEN);
+	const renderRef = useRef<boolean>(false);
 
-	const bodyOptions = options.body
+	const bodyOptions = options.body;
 	useEffect(() => {
 		(async () => {
 			if (ip == null) {
@@ -59,6 +60,11 @@ export default function useApi<R extends Object | Array<Object>>(
 
 			if (auth == null) {
 				throw Error();
+			}
+
+			if (options.method !== 'GET' && !renderRef.current) {
+				renderRef.current = true
+				return;
 			}
 
 			const url = `${END_POINTS[type](ip.value, auth.value, path)}`;

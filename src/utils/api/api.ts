@@ -12,6 +12,9 @@ async function api<R, E>(
 		response = await fetch(url, options);
 		return { json: await response.json(), error: null, response };
 	} catch (e) {
+		if (e.includes("EOF")) {
+			return { json: null, error: null, response: null };
+		}
 		return {
 			json: null,
 			error: `URL: ${url} \n\n Error: ${String(e)} \n\n Options: ${JSON.stringify(options)}`,
