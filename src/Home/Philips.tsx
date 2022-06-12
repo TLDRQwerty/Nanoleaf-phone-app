@@ -8,6 +8,7 @@ import Card from "../ui/Card";
 import Switch from "../ui/Switch";
 import Toggle from "../ui/Toggle";
 import Slider from "../ui/Slider";
+import Chips from "../ui/Chips";
 import { Info, State as PhilipsState } from "../utils/api/PhilipsTypes";
 import { getItem, StorageKeys } from "../utils/localStorage";
 import tw from "../tailwind";
@@ -75,8 +76,8 @@ function Group({ id }: { id: string | number }) {
 					produce<Info>(info, (i) => {
 						i.groups[id].action[key] = value;
 						group.lights.forEach((light) => {
-								i.lights[light].state[key] = value
-								})
+							i.lights[light].state[key] = value;
+						});
 					})
 				);
 			},
@@ -91,6 +92,9 @@ function Group({ id }: { id: string | number }) {
 			<View style={tw`flex-row justify-between`}>
 				<Text>{group.name}</Text>
 				<Power value={group.action.on} onValueChange={(value) => mutation.mutate({ key: "on", value })} />
+			</View>
+			<View style={tw`py-2`}>
+				<Scenes value={group.action.scene} onValueChange={(value) => mutation.mutate({ key: "scene", value })} />
 			</View>
 			<Controls value={group.action} onValueChange={(key, value) => mutation.mutate({ key, value })} />
 		</View>
@@ -136,6 +140,30 @@ function Light({ id }: { id: string | number }) {
 			</View>
 			<Controls value={light.state} onValueChange={(key, value) => mutation.mutate({ key, value })} />
 		</View>
+	);
+}
+
+function Scenes({ value, onValueChange }: { value: string; onValueChange: (value: string) => void }) {
+	const { scenes } = useStore((s) => ({ scenes: s.info.scenes }));
+	if (scenes == null) {
+		return null;
+	}
+
+	const options: { id: string; name: string | null }[] = Object.keys(scenes).reduce(
+		(carry, value) => [...carry, { id: value, name: scenes[value].name }],
+		[]
+	);
+
+	options.unshift({ name: "None", id: "none" });
+
+	return (
+		<Chips options={options} value={value}>
+			{({ id, name }) => (
+				<Chips.Chip value={id} key={id} onPress={(value) => onValueChange(value)}>
+					<Text>{name}</Text>
+				</Chips.Chip>
+			)}
+		</Chips>
 	);
 }
 
