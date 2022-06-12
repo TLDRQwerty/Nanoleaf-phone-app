@@ -1,6 +1,6 @@
-import { NetInfoStateType, useNetInfo } from "@react-native-community/netinfo";
-import React from "react";
-import { ScrollView, View } from "react-native";
+import React, { useState } from "react";
+import { NetInfoStateType } from "@react-native-community/netinfo";
+import { ScrollView, RefreshControl } from "react-native";
 import { Link } from "react-router-native";
 import useNetworkListener from "../hooks/use-network-listener";
 import tw from "../tailwind";
@@ -11,6 +11,7 @@ import Nanoleaf from "./Nanoleaf";
 import Philips from "./Philips";
 
 export default function Home() {
+	const [, rerender] = useState(0);
 	const netinfo = useNetworkListener();
 	return (
 		<Page
@@ -21,6 +22,7 @@ export default function Home() {
 				</Link>
 			}
 			scrollable
+			refreshControl={<RefreshControl refreshing={false} onRefresh={() => rerender((p) => p + 1)} />}
 		>
 			{netinfo?.type !== NetInfoStateType.wifi && (
 				<Alert type="error">

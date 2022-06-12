@@ -56,7 +56,7 @@ function Errors() {
 		return null;
 	}
 	return (
-		<View>
+		<View style={tw`flex-row`}>
 			<ErrorWrapper index={0} title={errors[0].title} description={errors[0].description} />
 		</View>
 	);
@@ -76,14 +76,16 @@ function ErrorWrapper({ index, title, description }: { index: number } & ErrorTy
 				<Alert.Title>
 					<View style={tw`flex-row justify-between`}>
 						<Text style={tw.style(Alert.title({ type: "error" }))}>{title}</Text>
-						{errors.length - 1 > 0 && (
-							<Text style={tw.style(Alert.title({ type: "error" }))}>+ {errors.length - 1} more</Text>
-						)}
 					</View>
 				</Alert.Title>
 				<Alert.Description>
 					<Text style={tw.style(Alert.description({ type: "error" }))}>{description}</Text>
 				</Alert.Description>
+				<View style={tw`flex-row ml-auto`}>
+					{errors.length - 1 > 0 && (
+						<Text style={tw.style(Alert.title({ type: "error" }))}>+ {errors.length - 1} more</Text>
+					)}
+				</View>
 			</Alert>
 		</Pressable>
 	);

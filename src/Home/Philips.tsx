@@ -1,12 +1,14 @@
 import React, { Suspense, useEffect } from "react";
-import { View } from "react-native";
+import { View, useColorScheme } from "react-native";
 import produce from "immer";
 import { useQuery, useMutation } from "react-query";
+import { ExclamationCircleIcon } from "react-native-heroicons/solid";
 import create from "zustand";
 import Text from "../ui/Text";
 import Card from "../ui/Card";
 import Switch from "../ui/Switch";
 import Toggle from "../ui/Toggle";
+import Pressable from "../ui/Pressable";
 import Slider from "../ui/Slider";
 import Chips from "../ui/Chips";
 import { Info, State as PhilipsState } from "../utils/api/PhilipsTypes";
@@ -91,7 +93,7 @@ function Group({ id }: { id: string | number }) {
 	return (
 		<View>
 			<View style={tw`flex-row justify-between`}>
-				<Text>{group.name}</Text>
+				<Text style={tw`text-lg font-bold`}>{group.name}</Text>
 				<Power value={group.action.on} onValueChange={(value) => mutation.mutate({ key: "on", value })} />
 			</View>
 			<View style={tw`py-2`}>
@@ -110,6 +112,7 @@ function Lights() {
 function Light({ id }: { id: string | number }) {
 	const { light, setInfo, info } = useStore((s) => ({ light: s.info.lights[id], setInfo: s.setInfo, info: s.info }));
 	const renderError = useError();
+	const colorscheme = useColorScheme();
 	const mutation = useMutation(
 		async ({ key, value }: { key: keyof Omit<PhilipsState, "reachable">; value: string | number | boolean }) => {
 			const ip = await getItem(StorageKeys.PHILIPS.IP_ADDRESS);
@@ -136,7 +139,25 @@ function Light({ id }: { id: string | number }) {
 	return (
 		<View>
 			<View style={tw`flex-row justify-between`}>
-				<Text>{light.name}</Text>
+				<View style={tw`flex-row justify-between items-center`}>
+					{!light.state.reachable && (
+						<View style={tw`pr-2`}>
+							<Pressable
+								type="none"
+								onPress={() => {
+									renderError({
+										title: `Unable to locate ${light.name}`,
+										description: <Text>Check that the light is connected</Text>,
+									});
+								}}
+									style={tw`p-0 m-0`}
+							>
+								<ExclamationCircleIcon fill={colorscheme === "dark" ? "white" : "black"} />
+							</Pressable>
+						</View>
+					)}
+					<Text style={tw`text-lg font-bold`}>{light.name}</Text>
+				</View>
 				<Power value={light.state.on} onValueChange={(value) => mutation.mutate({ key: "on", value })} />
 			</View>
 			<Controls value={light.state} onValueChange={(key, value) => mutation.mutate({ key, value })} />

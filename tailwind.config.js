@@ -5,10 +5,10 @@ module.exports = {
 	theme: {
 		extend: {
 			colors: {
-				primary: colors.fuchsia,
-				secondary: colors.gray,
-				"dark-primary": colors.gray,
-				"dark-secondary": colors.blue,
+				primary: colors.rose,
+				secondary: colors.fuchsia,
+				"dark-primary": colors.rose,
+				"dark-secondary": colors.fuchsia,
 			},
 		},
 	},

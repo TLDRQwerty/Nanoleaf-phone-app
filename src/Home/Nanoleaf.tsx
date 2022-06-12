@@ -56,7 +56,7 @@ function Nanoleaf() {
 	return (
 		<View>
 			<View style={tw`flex-row justify-between`}>
-				<Text>{data.name}</Text>
+				<Text style={tw`text-lg font-bold`}>{data.name}</Text>
 				<Power />
 			</View>
 			<Effects />

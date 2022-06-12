@@ -11,13 +11,14 @@ type Props = {
 	headerLeft?: ReactNode;
 	headerRight?: ReactNode;
 	scrollable?: boolean;
+	refreshControl: any;
 };
 
-function Page({ title, children, headerLeft, headerRight, scrollable = false }: Props) {
+function Page({ title, children, headerLeft, headerRight, scrollable = false, refreshControl }: Props) {
 	const Component = scrollable ? ScrollView : View;
 	return (
 		<View style={tw`h-full`}>
-			<View style={tw`flex-row p-2 bg-secondary-50 dark:bg-dark-primary-800 px-4 items-center shadow-lg`}>
+			<View style={tw`flex-row p-2 bg-secondary-50 dark:bg-stone-800 px-4 items-center shadow-lg`}>
 				<View style={tw`w-1/6`}>
 					{headerLeft || (
 						<Link to="..">
@@ -29,17 +30,19 @@ function Page({ title, children, headerLeft, headerRight, scrollable = false }: 
 					{isValidElement(title) ? (
 						title
 					) : (
-						<Text style={tw`text-center font-bold text-lg text-primary-900 dark:text-dark-primary-300`}>
+						<Text style={tw`text-center font-bold text-lg text-primary-900 dark:text-dark-primary-500`}>
 							{String(title)}
 						</Text>
 					)}
 				</View>
 				<View style={tw`w-1/6 flex-row-reverse`}>{headerRight || <View />}</View>
 			</View>
-			<View>
+			<View style={tw`bg-gray-50 dark:bg-stone-700`}>
 				<ErrorBoundary.Errors />
 			</View>
-			<Component style={tw`pb-4 bg-secondary-50 dark:bg-dark-primary-700 flex flex-1`}>{children}</Component>
+			<Component style={tw`pb-4 bg-gray-50 dark:bg-stone-700 flex-1`} refreshControl={refreshControl}>
+				{children}
+			</Component>
 		</View>
 	);
 }
