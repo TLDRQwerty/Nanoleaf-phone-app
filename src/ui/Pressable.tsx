@@ -16,7 +16,7 @@ const pressable = cva("px-6 rounded-2xl py-2 items-center", {
 			tonal: "bg-primary-600/50",
 			outline: "border border-black bg-white",
 			elevated: "bg-white shadow-xl",
-			none: ''
+			none: "",
 		},
 	},
 	defaultVariants: { type: "filled" },
@@ -45,7 +45,8 @@ function Pressable({
 }: Props & VariantProps<typeof pressable>) {
 	const [pressed, setPressed] = useState(false);
 	const opacity = useRef(new Animated.Value(0)).current;
-useEffect(() => { if (pressed) {
+	useEffect(() => {
+		if (pressed) {
 			Animated.timing(opacity, {
 				toValue: 0.35,
 				duration: 50,
@@ -87,4 +88,4 @@ useEffect(() => { if (pressed) {
 	);
 }
 
-export default Object.assign(Pressable, { text});
+export default Object.assign(Pressable, { text });

@@ -1,7 +1,7 @@
 import { getItem, saveItem } from "../utils/localStorage";
 import { useEffect, useRef, useState } from "react";
 
-export default function useLocalStorage(key: string, defaultValue: string = "") {
+export default function useLocalStorage(key: string, defaultValue: string | null = "") {
 	const [value, setValue] = useState(defaultValue);
 	const oldValue = useRef<string | null>();
 
@@ -14,15 +14,11 @@ export default function useLocalStorage(key: string, defaultValue: string = "") 
 		})();
 	}, [key]);
 
-	useEffect(() => {
-		(async () => {
-			if (value !== oldValue.current) {
-				await saveItem(key, value);
-				setValue(value);
-				oldValue.current = value;
-			}
-		})();
-	}, [value, key]);
-
-	return [value];
+	return [
+		value,
+		(v: string) => {
+			setValue(v);
+			saveItem(key, v);
+		},
+	];
 }

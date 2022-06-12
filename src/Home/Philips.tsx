@@ -1,240 +1,198 @@
-import React, { createContext, Dispatch, useContext, useEffect, useReducer, useState } from "react";
+import React, { Suspense, useEffect } from "react";
 import { View } from "react-native";
-import { Integration, useObject } from "../Database";
-import useApi, { ROUTES } from "../hooks/use-api";
-import tw from "../tailwind";
-import Pressable from "../ui/Pressable";
+import produce from "immer";
+import { useQuery, useMutation } from "react-query";
+import create from "zustand";
 import Text from "../ui/Text";
-import { StorageKeys } from "../utils/localStorage";
-import { Info, State as LightState } from "../utils/api/PhilipsTypes";
-import Slider from "../ui/Slider";
 import Card from "../ui/Card";
-import Chips from "../ui/Chips";
+import Switch from "../ui/Switch";
 import Toggle from "../ui/Toggle";
+import Slider from "../ui/Slider";
+import { Info, State as PhilipsState } from "../utils/api/PhilipsTypes";
+import { getItem, StorageKeys } from "../utils/localStorage";
+import tw from "../tailwind";
+import { useError } from "../ui/ErrorBoundary";
 
 interface State {
-	info: Info | null;
+	info: Info;
+	setInfo: (info: Info) => void;
 }
 
-enum ActionTypes {
-	SetInformation,
-}
-
-type Actions = { type: ActionTypes.SetInformation; info: any | null };
-
-const reducers: { [P in ActionTypes]: (state: State, action: Extract<Actions, { type: P }>) => State } = {
-	[ActionTypes.SetInformation]: (state, action) => ({ ...state, info: action.info }),
-};
-
-const PhilipsContext = createContext<[State, Dispatch<Actions>] | null>(null);
-
-function usePhilipsContext() {
-	const context = useContext(PhilipsContext);
-
-	if (context == null) {
-		throw Error();
-	}
-
-	return context;
-}
-
-export default function Wrapper() {
-	const [state, dispatch] = useReducer((state: State, action: Actions) => reducers[action.type](state, action), {
-		info: null,
-	});
-
-	return (
-		<PhilipsContext.Provider value={[state, dispatch]}>
-			<Philips />
-		</PhilipsContext.Provider>
-	);
-}
+const useStore = create<State>()((set) => ({
+	info: null,
+	setInfo: (info) => set((s) => ({ ...s, info })),
+}));
 
 function Philips() {
-	const authToken = useObject(Integration, StorageKeys.PHILIPS.AUTH_TOKEN)?.value || "";
-	const ipAddress = useObject(Integration, StorageKeys.PHILIPS.IP_ADDRESS)?.value || "";
-	const clientKey = useObject(Integration, StorageKeys.PHILIPS.CLIENT_KEY)?.value || "";
-
-	const [info] = useApi<Info>(ROUTES.PHILIPS.api, "PHILIPS", { method: "GET" });
-	const [, dispatch] = usePhilipsContext();
+	const { setInfo } = useStore((s) => ({ setInfo: s.setInfo }));
+	const { data } = useQuery("PHILIPS-INFO", async () => {
+		const ip = await getItem(StorageKeys.PHILIPS.IP_ADDRESS);
+		const auth = await getItem(StorageKeys.PHILIPS.AUTH_TOKEN);
+		const d = await fetch(`http://${ip}/api/${auth}/`);
+		return await d.json();
+	});
 
 	useEffect(() => {
-		dispatch({ type: ActionTypes.SetInformation, info });
-	}, [info]);
+		setInfo(data);
+	}, [data, setInfo]);
 
+	if (data == null) {
+		return null;
+	}
+
+	return (
+		<>
+			<Groups />
+			<Lights />
+		</>
+	);
+}
+
+function Groups() {
+	const { groups } = useStore((s) => ({ groups: s.info?.groups }));
+	if (groups == null) {
+		return null;
+	}
+	const g = Object.values(groups).filter((g) => g.type === "Room");
+	return <>{groups != null ? g.map((_, idx) => <Group id={idx + 1} key={idx + 1} />) : null}</>;
+}
+
+function Group({ id }: { id: string | number }) {
+	const { group, setInfo, info } = useStore((s) => ({ group: s.info.groups[id], setInfo: s.setInfo, info: s.info }));
+	const renderError = useError();
+	const mutation = useMutation(
+		async ({ key, value }: { key: keyof Omit<PhilipsState, "reachable">; value: string | number | boolean }) => {
+			const ip = await getItem(StorageKeys.PHILIPS.IP_ADDRESS);
+			const auth = await getItem(StorageKeys.PHILIPS.AUTH_TOKEN);
+			return fetch(`http://${ip}/api/${auth}/groups/${id}/action`, {
+				method: "PUT",
+				body: JSON.stringify({ [key]: value }),
+			});
+		},
+		{
+			onSuccess: (_, { key, value }) => {
+				setInfo(
+					produce<Info>(info, (i) => {
+						i.groups[id].action[key] = value;
+					})
+				);
+			},
+			onError: (error) => {
+				renderError({ title: "An error occurred", description: <Text> {JSON.stringify(error)}</Text> });
+			},
+		}
+	);
+
+	return (
+		<View>
+			<View style={tw`flex-row justify-between`}>
+				<Text>{group.name}</Text>
+				<Power value={group.action.on} onValueChange={(value) => mutation.mutate({ key: "on", value })} />
+			</View>
+			<Controls value={group.action} onValueChange={(key, value) => mutation.mutate({ key, value })} />
+		</View>
+	);
+}
+
+function Lights() {
+	const { lights } = useStore((s) => ({ lights: s.info?.lights }));
+	return <>{lights != null ? Object.keys(lights).map((id) => <Light id={id} key={id} />) : null}</>;
+}
+
+function Light({ id }: { id: string | number }) {
+	const { light, setInfo, info } = useStore((s) => ({ light: s.info.lights[id], setInfo: s.setInfo, info: s.info }));
+	const renderError = useError();
+	const mutation = useMutation(
+		async ({ key, value }: { key: keyof Omit<PhilipsState, "reachable">; value: string | number | boolean }) => {
+			const ip = await getItem(StorageKeys.PHILIPS.IP_ADDRESS);
+			const auth = await getItem(StorageKeys.PHILIPS.AUTH_TOKEN);
+			return fetch(`http://${ip}/api/${auth}/lights/${id}/state`, {
+				method: "PUT",
+				body: JSON.stringify({ [key]: value }),
+			});
+		},
+		{
+			onSuccess: (_, { key, value }) => {
+				setInfo(
+					produce<Info>(info, (i) => {
+						i.lights[id].state[key] = value;
+					})
+				);
+			},
+			onError: (error) => {
+				renderError({ title: "An error occurred", description: <Text> {JSON.stringify(error)}</Text> });
+			},
+		}
+	);
+
+	return (
+		<View>
+			<View style={tw`flex-row justify-between`}>
+				<Text>{light.name}</Text>
+				<Power value={light.state.on} onValueChange={(value) => mutation.mutate({ key: "on", value })} />
+			</View>
+			<Controls value={light.state} onValueChange={(key, value) => mutation.mutate({ key, value })} />
+		</View>
+	);
+}
+
+function Power({ value, onValueChange }: { value: boolean; onValueChange: (value: boolean) => void }) {
+	return <Switch value={value} onValueChange={onValueChange} />;
+}
+
+function Controls({ value, onValueChange }: { value: PhilipsState; onValueChange: (key: any, value: any) => void }) {
+	return (
+		<View>
+			<Toggle options={["none", "colorloop"]} value={value.effect}>
+				<Toggle.Left value={"none"} onPress={(v) => onValueChange("effect", v)}>
+					<Text>None</Text>
+				</Toggle.Left>
+				<Toggle.Right value={"colorloop"} onPress={(v) => onValueChange("effect", v)}>
+					<Text>colorloop</Text>
+				</Toggle.Right>
+			</Toggle>
+			<Slider
+				label="Brightness"
+				value={value.bri}
+				onValueChange={(v) => onValueChange("bri", v)}
+				minimumValue={1}
+				maximumValue={254}
+				step={1}
+			/>
+			<Slider
+				label="Hue"
+				value={value.hue}
+				onValueChange={(v) => onValueChange("hue", v)}
+				minimumValue={0}
+				maximumValue={65535}
+				step={1}
+			/>
+			<Slider
+				label="Color Temperature"
+				value={value.ct}
+				onValueChange={(v) => onValueChange("ct", v)}
+				minimumValue={153}
+				maximumValue={500}
+				step={1}
+			/>
+			<Slider
+				label="Saturation"
+				value={value.sat}
+				onValueChange={(v) => onValueChange("sat", v)}
+				minimumValue={0}
+				maximumValue={254}
+				step={1}
+			/>
+		</View>
+	);
+}
+
+export default function Loader() {
 	return (
 		<Card>
-			<Text style={tw`font-bold`}>Philips Hue</Text>
-			<Text style={tw`text-xs`}>
-				<Text>IP Address: </Text>
-				<Text>{ipAddress}</Text>
-			</Text>
-			<Text style={tw`text-xs`}>
-				<Text>Client Key: </Text>
-				<Text>{clientKey}</Text>
-			</Text>
-			<Text style={tw`text-xs`}>
-				<Text>Auth Token: </Text>
-				<Text>{authToken}</Text>
-			</Text>
-
-			<Information />
+			<Suspense fallback={<Text>Loading</Text>}>
+				<Philips />
+			</Suspense>
 		</Card>
-	);
-}
-
-function Information() {
-	const [state] = usePhilipsContext();
-
-	if (state.info == null) {
-		return null;
-	}
-
-	return (
-		<View>
-			<View>
-				{Object.keys(state.info.groups).map((key) => (
-					<Group key={key} id={key} />
-				))}
-				{Object.keys(state.info.lights).map((key) => (
-					<Light key={state.info?.lights[key].uniqueid} id={key} />
-				))}
-			</View>
-		</View>
-	);
-}
-
-function Group({ id }: { id: string }) {
-	const [state] = usePhilipsContext();
-
-	const group = state.info?.groups[id];
-
-	if (state.info == null || group == null || group?.type !== "Room") {
-		return null;
-	}
-
-	return (
-		<View style={tw`pb-2`}>
-			<View style={tw`flex flex-row items-center justify-between my-2`}>
-				<Text>{group.name}</Text>
-				<View>
-					<Power value={state.info.groups[id].action.on} endpoint={ROUTES.PHILIPS.group.setAction(id)} />
-				</View>
-			</View>
-			<View style={tw`pb-2`}>
-				<Scenes endpoint={ROUTES.PHILIPS.group.setAction(id)} />
-			</View>
-			<View>
-				<Controls value={state.info.groups[id].action} endpoint={ROUTES.PHILIPS.group.setAction(id)} />
-			</View>
-		</View>
-	);
-}
-
-function Light({ id }: { id: string }) {
-	const [state] = usePhilipsContext();
-	const info = state.info?.lights[id];
-
-	if (info == null) {
-		return null;
-	}
-
-	return (
-		<View>
-			<View style={tw`flex flex-row items-center justify-between`}>
-				<Text>{info.name}</Text>
-				<View>
-					<Power value={info?.state.on} endpoint={ROUTES.PHILIPS.light.set(id)} />
-				</View>
-			</View>
-			<Controls value={info.state} endpoint={ROUTES.PHILIPS.light.set(id)} />
-		</View>
-	);
-}
-
-function Scenes({ endpoint }: { endpoint: string }) {
-	const [state] = usePhilipsContext();
-	const [selected, setSelected] = useState<string | null>("none");
-
-	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ scene: selected }) });
-
-	if (state.info == null) {
-		return null;
-	}
-
-	const options: { id: string; name: string | null }[] = Object.keys(state.info.scenes).reduce(
-		(carry, value) => [...carry, { id: value, name: state.info?.scenes[value].name }],
-		[]
-	);
-
-	options.push({ name: "none", id: "none" });
-
-	return (
-		<Chips options={options}>
-			{({ id, name }) => (
-				<Chips.Chip value={id} key={id} selected={selected === id} onPress={setSelected}>
-					<Text>{name}</Text>
-				</Chips.Chip>
-			)}
-		</Chips>
-	);
-}
-
-function Power({ endpoint, value }: { endpoint: string; value: boolean }) {
-	const [on, setOn] = useState(value);
-
-	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ on: !on }) });
-
-	const t = on ? "filled" : "tonal";
-
-	return (
-		<Pressable type={t} onPress={() => setOn((o) => !o)}>
-			<Text style={Pressable.text({ type: t })}>{on ? "On" : "Off"}</Text>
-		</Pressable>
-	);
-}
-
-function Controls({ endpoint, value }: { endpoint: string; value: LightState }) {
-	const [state] = usePhilipsContext();
-	const [bri, setBri] = useState(value.bri);
-	const [hue, setHue] = useState(value.hue);
-	const [sat, setSat] = useState(value.sat);
-	const [ct, setCt] = useState(value.ct);
-	const [effect, setEffect] = useState<"none" | "colorloop">(value.effect);
-
-	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ bri }) });
-	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ hue }) });
-	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ ct }) });
-	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ sat }) });
-	useApi(endpoint, "PHILIPS", { method: "PUT", body: JSON.stringify({ effect }) });
-
-	if (state.info == null) {
-		return null;
-	}
-
-	return (
-		<View>
-			<View>
-				<Toggle options={["none", "colorloop"]}>
-					<Toggle.Left value={"none"} selected={"none" === effect} onPress={setEffect}>
-						<Text>None</Text>
-					</Toggle.Left>
-					<Toggle.Right value={"colorloop"} selected={"colorloop" === effect} onPress={setEffect}>
-						<Text>colorloop</Text>
-					</Toggle.Right>
-				</Toggle>
-				<Slider label="Brightness" value={bri} onValueChange={setBri} minimumValue={1} maximumValue={254} step={1} />
-				<Slider label="Hue" value={hue} onValueChange={setHue} minimumValue={0} maximumValue={65535} step={1} />
-				<Slider
-					label="Color Temperature"
-					value={ct}
-					onValueChange={setCt}
-					minimumValue={153}
-					maximumValue={500}
-					step={1}
-				/>
-				<Slider label="Saturation" value={sat} onValueChange={setSat} minimumValue={0} maximumValue={254} step={1} />
-			</View>
-		</View>
 	);
 }

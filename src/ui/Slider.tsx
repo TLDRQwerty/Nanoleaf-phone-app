@@ -1,5 +1,5 @@
 import React, { ComponentProps, useEffect } from "react";
-import CSlider  from "@react-native-community/slider";
+import CSlider from "@react-native-community/slider";
 import { View } from "react-native";
 import Text from "../ui/Text";
 import tw from "../tailwind";
@@ -10,10 +10,15 @@ function Slider({ label, ...rest }: Props) {
 	return (
 		<View>
 			<View style={tw`flex-row`}>
-				<Text style={tw`text-sm font-medium mr-4`}>{label}:</Text>
-				<Text style={tw`text-sm font-medium font-bold`}>{rest.value}</Text>
+				<Text style={tw`text-sm mr-4`}>{label}:</Text>
+				<Text style={tw`text-sm font-bold`}>{rest.value}</Text>
 			</View>
-			<CSlider {...rest} />
+			<CSlider
+				minimumTrackTintColor={tw`bg-primary-600`.backgroundColor}
+				maximumTrackTintColor={tw`bg-primary-400`.backgroundColor}
+				thumbTintColor={tw`bg-primary-800`.backgroundColor}
+				{...rest}
+			/>
 		</View>
 	);
 }

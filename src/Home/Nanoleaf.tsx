@@ -1,141 +1,149 @@
-import React, { createContext, Dispatch, useContext, useEffect, useReducer, useState } from "react";
+import React, { Suspense, useEffect } from "react";
 import { View } from "react-native";
-import { Integration, useObject } from "../Database";
-import tw from "../tailwind";
+import produce from "immer";
+import create from "zustand";
+import { useQuery, useMutation } from "react-query";
+import Card from "../ui/Card";
 import Text from "../ui/Text";
-import Pressable from "../ui/Pressable";
-import { StorageKeys } from "../utils/localStorage";
-import useApi, { ROUTES } from "../hooks/use-api";
-import { Info } from "../utils/api/NanoleafTypes";
 import Chips from "../ui/Chips";
 import Slider from "../ui/Slider";
-import Card from "../ui/Card";
+import Switch from "../ui/Switch";
+import { useError } from "../ui/ErrorBoundary";
+import useLocalStorage from "../hooks/use-local-storage";
+import { StorageKeys, getItem } from "../utils/localStorage";
+import { Info, State as NanoleafState } from "../utils/api/NanoleafTypes";
+import tw from "../tailwind";
 
 interface State {
 	info: Info | null;
+	setInfo: (info: Info) => void;
 }
 
-enum ActionTypes {
-	SetInformation,
-}
-
-type Actions = { type: ActionTypes.SetInformation; info: Info | null };
-
-const reducers: { [P in ActionTypes]: (state: State, action: Extract<Actions, { type: P }>) => State } = {
-	[ActionTypes.SetInformation]: (state, action) => ({ ...state, info: action.info }),
-};
-
-const NanoleafContext = createContext<[State, Dispatch<Actions>] | null>(null);
-
-function useNanoleafContext() {
-	const context = useContext(NanoleafContext);
-
-	if (context == null) {
-		throw Error();
-	}
-	return context;
-}
-
-export default function ContextWrapper() {
-	const [state, dispatch] = useReducer((state: State, action: Actions) => reducers[action.type](state, action), {
-		info: null,
-	});
-
-	return (
-		<NanoleafContext.Provider value={[state, dispatch]}>
-			<Nanoleaf />
-		</NanoleafContext.Provider>
-	);
-}
+const useStore = create<State>()((set) => ({
+	info: null,
+	setInfo: (info) => set((state) => ({ ...state, info })),
+}));
 
 function Nanoleaf() {
-	const authToken = useObject(Integration, StorageKeys.NANOLEAF.AUTH_TOKEN)?.value || "";
-	const ipAddress = useObject(Integration, StorageKeys.NANOLEAF.IP_ADDRESS)?.value || "";
+	const { setInfo } = useStore((s) => ({ setInfo: s.setInfo }));
+	const renderError = useError();
 
-	const [info] = useApi<Info>(ROUTES.NANOLEAF.info, "NANOLEAF", { method: "GET" });
-	const [, dispatch] = useNanoleafContext();
+	const { data, isError, error } = useQuery<Info>(
+		"NANOLEAF-INFO",
+		async () => {
+			const ip = await getItem(StorageKeys.NANOLEAF.IP_ADDRESS);
+			const auth = await getItem(StorageKeys.NANOLEAF.AUTH_TOKEN);
+
+			const d = await fetch(`http://${ip}:16021/api/v1/${auth}/`);
+			return await d.json();
+		},
+		{ suspense: true }
+	);
 
 	useEffect(() => {
-		dispatch({ type: ActionTypes.SetInformation, info: info });
-	}, [info]);
+		if (data != null) {
+			setInfo(data);
+		}
+	}, []);
 
-	return (
-		<Card>
-			<View style={tw`flex-row flex flex-1 justify-between items-center`}>
-				<Text style={tw`text-center font-bold`}>Nanoleaf</Text>
-				<View>
-					<Power />
-				</View>
-			</View>
-			<View style={tw`mb-4`}>
-				<Text style={tw`text-xs`}>
-					<Text>IP Address: </Text>
-					<Text>{ipAddress}</Text>
-				</Text>
-				<Text style={tw`text-xs`}>
-					<Text>Auth Token: </Text>
-					<Text>{authToken}</Text>
-				</Text>
-			</View>
-
-			<Information />
-		</Card>
-	);
-}
-
-function Power() {
-	const [state] = useNanoleafContext();
-	const [on, setOn] = useState(state.info?.state.on.value || false);
-
-	useApi(ROUTES.NANOLEAF.state, "NANOLEAF", { method: "PUT", body: JSON.stringify({ on: { value: !on } }) });
-
-	if (state.info == null) {
-		return null;
+	if (isError) {
+		renderError({ title: "An error occured fetching the data", description: <Text>{JSON.stringify(error)}</Text> });
 	}
 
-	const type = on ? "filled" : "tonal";
-
-	return (
-		<Pressable style={tw`mb-2`} type={type} onPress={() => setOn((p) => !p)}>
-			<Text style={Pressable.text({ type })}>{on ? "On" : "Off"}</Text>
-		</Pressable>
-	);
-}
-
-function Information() {
-	const [state] = useNanoleafContext();
-
-	if (state.info == null) {
-		return null;
+	if (data == null) {
+		return <Text>Nothing</Text>;
 	}
-
 	return (
-		<View style={tw`flex-1`}>
-			<View style={tw`mb-2`}>
-				<Text>{state.info.name}</Text>
+		<View>
+			<View style={tw`flex-row justify-between`}>
+				<Text>{data.name}</Text>
+				<Power />
 			</View>
 			<Effects />
-
 			<Controls />
 		</View>
 	);
 }
 
+function Power() {
+	const renderError = useError();
+
+	const { power, setInfo, info } = useStore((s) => ({
+		power: s.info?.state?.on.value,
+		setInfo: s.setInfo,
+		info: s.info,
+	}));
+
+	const mutation = useMutation(
+		async (value) => {
+			const ip = await getItem(StorageKeys.NANOLEAF.IP_ADDRESS);
+			const auth = await getItem(StorageKeys.NANOLEAF.AUTH_TOKEN);
+			return fetch(`http://${ip}:16021/api/v1/${auth}/state`, {
+				method: "PUT",
+				body: JSON.stringify({ on: { value: !value } }),
+			});
+		},
+		{
+			onSuccess: () => {
+				setInfo(
+					produce<Info>(info, (i) => {
+						i.state.on.value = !power;
+					})
+				);
+			},
+			onError: () => {
+				renderError({ title: "Failed to toggle power" });
+			},
+		}
+	);
+
+	if (power == null) {
+		return null;
+	}
+
+	return <Switch value={power} onValueChange={() => mutation.mutate(power)} />;
+}
+
 function Effects() {
-	const [state] = useNanoleafContext();
-	const effects = state.info?.effects;
-	const [selected, setSelected] = useState(effects?.select || null);
+	const { effectsList, select, setInfo, info } = useStore((s) => ({
+		effectsList: s.info?.effects.effectsList,
+		select: s.info?.effects.select,
+		setInfo: s.setInfo,
+		info: s.info,
+	}));
+	const renderError = useError();
 
-	useApi(ROUTES.NANOLEAF.effects, "NANOLEAF", { method: "PUT", body: JSON.stringify({ select: selected }) });
+	const mutation = useMutation(
+		async (s) => {
+			const ip = await getItem(StorageKeys.NANOLEAF.IP_ADDRESS);
+			const auth = await getItem(StorageKeys.NANOLEAF.AUTH_TOKEN);
+			return fetch(`http://${ip}:16021/api/v1/${auth}/effects`, {
+				method: "PUT",
+				body: JSON.stringify({ select: s }),
+			});
+		},
+		{
+			onSuccess: (_, variables, __) => {
+				setInfo(
+					produce<Info>(info, (i) => {
+						i.effects.select = variables;
+					})
+				);
+			},
+			onError: () => {
+				renderError({ title: "Failed to set effect" });
+			},
+		}
+	);
 
-	if (effects?.effectsList == null) {
+	if (effectsList == null) {
 		return null;
 	}
 
 	return (
-		<Chips options={effects.effectsList}>
+		<Chips options={effectsList} value={select}>
 			{(v) => (
-				<Chips.Chip key={v} value={v} selected={v === selected} onPress={setSelected}>
+				<Chips.Chip key={v} value={v} onPress={() => mutation.mutate(v)}>
 					<Text>{v}</Text>
 				</Chips.Chip>
 			)}
@@ -144,89 +152,91 @@ function Effects() {
 }
 
 function Controls() {
-	const [state] = useNanoleafContext();
-	const r = state.info?.state;
-	const [brightness, setBrightness] = useState(r?.brightness.value || 0);
-	const [colorTemperature, setColorTemperature] = useState(r?.ct.value || 0);
-	const [hue, setHue] = useState(r?.hue.value || 0);
-	const [saturation, setSaturation] = useState(r?.sat.value || 0);
+	const renderError = useError();
 
-	const jr = JSON.stringify(r);
-	useEffect(() => {
-		if (r == null) {
-			return;
+	const { state, setInfo, info } = useStore((s) => ({ state: s.info?.state, setInfo: s.setInfo, info: s.info }));
+
+	const mutation = useMutation(
+		async ({ key, value }: { key: keyof Omit<NanoleafState, "on" | "colorMode">; value: any }) => {
+			const ip = await getItem(StorageKeys.NANOLEAF.IP_ADDRESS);
+			const auth = await getItem(StorageKeys.NANOLEAF.AUTH_TOKEN);
+			return fetch(`http://${ip}:16021/api/v1/${auth}/state`, {
+				method: "PUT",
+				body: JSON.stringify({ [key]: { value: value } }),
+			});
+		},
+		{
+			onSuccess: (_, { key, value }) => {
+				setInfo(
+					produce<Info>(info, (i) => {
+						i.state[key].value = value;
+					})
+				);
+			},
+			onError: () => {
+				renderError({ title: "Failed to toggle thing" });
+			},
 		}
-		setBrightness(r?.brightness.value);
-		setColorTemperature(r?.ct.value);
-		setHue(r?.hue.value);
-		setSaturation(r?.sat.value);
-	}, [jr]);
+	);
 
-	useApi(ROUTES.NANOLEAF.state, "NANOLEAF", {
-		method: "PUT",
-		body: JSON.stringify({
-			brightness: {
-				value: brightness,
-			},
-		}),
-	});
-	useApi(ROUTES.NANOLEAF.state, "NANOLEAF", {
-		method: "PUT",
-		body: JSON.stringify({
-			hue: {
-				value: hue,
-			},
-		}),
-	});
-	useApi(ROUTES.NANOLEAF.state, "NANOLEAF", {
-		method: "PUT",
-		body: JSON.stringify({
-			sat: {
-				value: saturation,
-			},
-		}),
-	});
-	useApi(ROUTES.NANOLEAF.state, "NANOLEAF", {
-		method: "PUT",
-		body: JSON.stringify({
-			ct: {
-				value: colorTemperature,
-			},
-		}),
-	});
-
-	if (r == null) {
+	if (state == null) {
 		return null;
 	}
+
 	return (
 		<View>
-			<View>
-				<Slider
-					label="Brightness"
-					value={brightness}
-					onValueChange={setBrightness}
-					minimumValue={0}
-					maximumValue={100}
-					step={1}
-				/>
-				<Slider label="Hue" value={hue} onValueChange={setHue} minimumValue={0} maximumValue={360} step={1} />
-				<Slider
-					label="Color Temperature"
-					value={colorTemperature}
-					onValueChange={setColorTemperature}
-					minimumValue={1200}
-					maximumValue={6500}
-					step={1}
-				/>
-				<Slider
-					label="Saturation"
-					value={saturation}
-					onValueChange={setSaturation}
-					minimumValue={0}
-					maximumValue={100}
-					step={1}
-				/>
-			</View>
+			<Slider
+				label="Brightness"
+				value={state.brightness.value}
+				onValueChange={(value) => mutation.mutate({ key: "brightness", value })}
+				minimumValue={0}
+				maximumValue={100}
+				step={1}
+			/>
+			<Slider
+				label="Hue"
+				value={state.hue.value}
+				onValueChange={(value) => mutation.mutate({ key: "hue", value })}
+				minimumValue={0}
+				maximumValue={360}
+				step={1}
+			/>
+			<Slider
+				label="Color Temperature"
+				value={state.ct.value}
+				onValueChange={(value) => mutation.mutate({ key: "ct", value })}
+				minimumValue={1200}
+				maximumValue={6500}
+				step={1}
+			/>
+			<Slider
+				label="Saturation"
+				value={state.sat.value}
+				onValueChange={(value) => mutation.mutate({ key: "sat", value })}
+				minimumValue={0}
+				maximumValue={100}
+				step={1}
+			/>
 		</View>
+	);
+}
+
+export default function Loader() {
+	const [auth] = useLocalStorage(StorageKeys.NANOLEAF.AUTH_TOKEN, null);
+	const [ip] = useLocalStorage(StorageKeys.NANOLEAF.IP_ADDRESS, null);
+
+	if (auth == null || ip == null) {
+		return (
+			<Card>
+				<Text>Click the 'connect' button to login to the device</Text>
+			</Card>
+		);
+	}
+	return (
+		<Card>
+			<Suspense fallback={<Text>Loading...</Text>}>
+				<Nanoleaf />
+			</Suspense>
+		</Card>
 	);
 }

@@ -7,8 +7,8 @@ module.exports = {
 			colors: {
 				primary: colors.fuchsia,
 				secondary: colors.gray,
-				'dark-primary': colors.gray,
-				'dark-secondary': colors.blue,
+				"dark-primary": colors.gray,
+				"dark-secondary": colors.blue,
 			},
 		},
 	},

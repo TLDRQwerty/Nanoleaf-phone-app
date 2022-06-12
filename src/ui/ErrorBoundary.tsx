@@ -9,7 +9,7 @@ interface State {
 	errors: Array<ErrorType>;
 }
 
-type ErrorType = { title: string; description: ReactNode };
+type ErrorType = { title: string; description?: ReactNode };
 
 enum ActionTypes {
 	AddError,

@@ -5,7 +5,6 @@ import { useObject } from "../Database";
 import api from "../utils/api/api";
 import { useEffect, useRef, useState } from "react";
 import { useError } from "../ui/ErrorBoundary";
-import debounce from "../utils/debounce";
 
 export const ROUTES = Object.freeze({
 	NANOLEAF: {
@@ -62,8 +61,8 @@ export default function useApi<R extends Object | Array<Object>>(
 				throw Error();
 			}
 
-			if (options.method !== 'GET' && !renderRef.current) {
-				renderRef.current = true
+			if (options.method !== "GET" && !renderRef.current) {
+				renderRef.current = true;
 				return;
 			}
 
