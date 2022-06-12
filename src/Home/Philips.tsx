@@ -13,6 +13,7 @@ import { Info, State as PhilipsState } from "../utils/api/PhilipsTypes";
 import { getItem, StorageKeys } from "../utils/localStorage";
 import tw from "../tailwind";
 import { useError } from "../ui/ErrorBoundary";
+import useLocalStorage from "../hooks/use-local-storage";
 
 interface State {
 	info: Info;
@@ -219,6 +220,16 @@ function Controls({ value, onValueChange }: { value: PhilipsState; onValueChange
 }
 
 export default function Loader() {
+	const [auth] = useLocalStorage(StorageKeys.PHILIPS.AUTH_TOKEN, null);
+	const [ip] = useLocalStorage(StorageKeys.PHILIPS.IP_ADDRESS, null);
+
+	if (auth == null || ip == null) {
+		return (
+			<Card>
+				<Text>Click the 'connect' button to login to the device</Text>
+			</Card>
+		);
+	}
 	return (
 		<Card>
 			<Suspense fallback={<Text>Loading</Text>}>
