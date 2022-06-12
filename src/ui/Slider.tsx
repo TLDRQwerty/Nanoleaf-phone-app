@@ -14,9 +14,9 @@ function Slider({ label, ...rest }: Props) {
 				<Text style={tw`text-sm font-bold`}>{rest.value}</Text>
 			</View>
 			<CSlider
-				minimumTrackTintColor={tw`bg-primary-600`.backgroundColor}
-				maximumTrackTintColor={tw`bg-primary-400`.backgroundColor}
-				thumbTintColor={tw`bg-primary-800`.backgroundColor}
+				minimumTrackTintColor={tw`bg-primary-600 dark:bg-primary-600`.backgroundColor}
+				maximumTrackTintColor={tw`bg-primary-400 dark:bg-primary-800`.backgroundColor}
+				thumbTintColor={tw`bg-primary-800 dark:bg-primary-400`.backgroundColor}
 				{...rest}
 			/>
 		</View>

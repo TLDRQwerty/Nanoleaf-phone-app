@@ -14,7 +14,7 @@ const useStore = create<State>()((set) => ({
 	setSelected: (selected) => set((state) => ({ ...state, selected })),
 }));
 
-const toggleItem = cva(" bg-primary-100 dark:bg-primary-600  text-black py-1 px-2 rounded-xl", {
+const toggleItem = cva(" bg-primary-100 dark:bg-primary-600 text-black py-1 px-2 rounded-xl", {
 	variants: { selected: { true: "bg-primary-200 dark:bg-primary-900", false: "" } },
 	defaultVariants: { selected: true },
 });
@@ -28,7 +28,7 @@ function Toggle<Value>({ options, children, value }: { options: [Value, Value]; 
 
 	return (
 		<View
-			style={tw`border-primary-900 dark:border-primary-200 flex-row justify-start mr-auto border rounded-xl dark:bg-primary-600`}
+			style={tw`border-primary-900 dark:border-primary-400 flex-row justify-start mr-auto border rounded-xl dark:bg-primary-600`}
 		>
 			{children}
 		</View>

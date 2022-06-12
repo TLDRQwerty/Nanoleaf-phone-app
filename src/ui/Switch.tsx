@@ -8,8 +8,8 @@ type Props = {} & Omit<ComponentProps<typeof RNSwitch>, "style" | "thumbColor" |
 export default function Switch({ ...props }: Props) {
 	return (
 		<RNSwitch
-			thumbColor={tw`bg-primary-800`.backgroundColor}
-			trackColor={{ true: tw`bg-primary-400`.backgroundColor, false: tw`bg-primary-200`.backgroundColor }}
+			thumbColor={tw`bg-primary-800 dark:bg-primary-400`.backgroundColor}
+			trackColor={{ true: tw`bg-primary-400 dark:bg-primary-800`.backgroundColor, false: tw`bg-primary-200`.backgroundColor }}
 			{...props}
 		/>
 	);
