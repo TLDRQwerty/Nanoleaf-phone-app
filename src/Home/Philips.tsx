@@ -74,6 +74,9 @@ function Group({ id }: { id: string | number }) {
 				setInfo(
 					produce<Info>(info, (i) => {
 						i.groups[id].action[key] = value;
+						group.lights.forEach((light) => {
+								i.lights[light].state[key] = value
+								})
 					})
 				);
 			},
