@@ -4,14 +4,14 @@ import { View } from "react-native";
 import Text from "../ui/Text";
 import tw from "../tailwind";
 
-type Props = { label: string } & ComponentProps<typeof CSlider>;
+type Props = { label: string, showValue?: string | null } & ComponentProps<typeof CSlider>;
 
-function Slider({ label, ...rest }: Props) {
+function Slider({ label, showValue, ...rest }: Props) {
 	return (
 		<View>
 			<View style={tw`flex-row`}>
-				<Text style={tw`text-sm mr-4`}>{label}:</Text>
-				<Text style={tw`text-sm font-bold`}>{rest.value}</Text>
+				<Text style={tw`text-sm mr-4`}>{label}</Text>
+				{showValue && <Text style={tw`text-sm font-bold`}>{rest.value}</Text>}
 			</View>
 			<CSlider
 				minimumTrackTintColor={tw`bg-primary-600 dark:bg-primary-600`.backgroundColor}
