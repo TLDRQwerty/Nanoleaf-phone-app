@@ -18,7 +18,7 @@ import { useError } from "../ui/ErrorBoundary";
 import useLocalStorage from "../hooks/use-local-storage";
 
 interface State {
-	info: Info;
+	info: Info | null;
 	setInfo: (info: Info) => void;
 }
 
@@ -150,7 +150,7 @@ function Light({ id }: { id: string | number }) {
 										description: <Text>Check that the light is connected</Text>,
 									});
 								}}
-									style={tw`p-0 m-0`}
+								style={tw`p-0 m-0`}
 							>
 								<ExclamationCircleIcon fill={colorscheme === "dark" ? "white" : "black"} />
 							</Pressable>
@@ -172,7 +172,7 @@ function Scenes({ value, onValueChange }: { value: string; onValueChange: (value
 	}
 
 	const options: { id: string; name: string | null }[] = Object.keys(scenes).reduce(
-		(carry, value) => [...carry, { id: value, name: scenes[value].name }],
+		(carry, v) => [...carry, { id: v, name: scenes[value].name }],
 		[]
 	);
 
