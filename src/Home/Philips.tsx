@@ -172,7 +172,7 @@ function Scenes({ value, onValueChange }: { value: string; onValueChange: (value
 	}
 
 	const options: { id: string; name: string | null }[] = Object.keys(scenes).reduce(
-		(carry, v) => [...carry, { id: v, name: scenes[value].name }],
+		(carry, v) => [...carry, { id: v, name: scenes[v].name }],
 		[]
 	);
 
