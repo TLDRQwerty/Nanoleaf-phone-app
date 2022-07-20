@@ -247,7 +247,7 @@ export default function Loader() {
 	if (auth == null || ip == null) {
 		return (
 			<Card>
-				<Text>Click the 'connect' button to login to the device</Text>
+				<Text>Click the 'connect' button to setup the Philips device</Text>
 			</Card>
 		);
 	}

@@ -1,5 +1,5 @@
+import { useEffect, useRef, useState, useCallback } from "react";
 import { getItem, saveItem } from "../utils/localStorage";
-import { useEffect, useRef, useState } from "react";
 
 export default function useLocalStorage(key: string, defaultValue: string | null = "") {
 	const [value, setValue] = useState(defaultValue);
@@ -14,11 +14,10 @@ export default function useLocalStorage(key: string, defaultValue: string | null
 		})();
 	}, [key]);
 
-	return [
-		value,
-		(v: string) => {
-			setValue(v);
-			saveItem(key, v);
-		},
-	];
+	const set = useCallback((v) => {
+		setValue(v);
+		saveItem(key, v);
+	}, [key]);
+
+	return [value, set];
 }

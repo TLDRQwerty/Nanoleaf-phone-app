@@ -13,7 +13,7 @@ import { useError } from "../ui/ErrorBoundary";
 
 function Connect() {
 	return (
-		<Page title={"Connect"}>
+		<Page.Modal title={"Connect"}>
 			<View style={tw`m-4 my-auto`}>
 				<Card>
 					<View>
@@ -26,13 +26,14 @@ function Connect() {
 					</View>
 				</Card>
 			</View>
-		</Page>
+		</Page.Modal>
 	);
 }
 
 function Nanoleaf() {
 	const [ip, setIp] = useLocalStorage(StorageKeys.NANOLEAF.IP_ADDRESS, "");
 	const [, setAuth] = useLocalStorage(StorageKeys.NANOLEAF.AUTH_TOKEN, "");
+	const renderError = useError();
 
 	const mutation = useMutation(
 		() => {
@@ -44,6 +45,12 @@ function Nanoleaf() {
 			onSuccess: async (data) => {
 				const json = await data.json();
 				setAuth(json.auth_token);
+			},
+			onError: (error) => {
+				renderError({
+					title: "An error occurred trying to connect to Nanoleaf",
+					description: <Text>{JSON.stringify(error)}</Text>,
+				});
 			},
 		}
 	);
@@ -62,7 +69,8 @@ function Nanoleaf() {
 function Philips() {
 	const [ip, setIp] = useLocalStorage(StorageKeys.PHILIPS.IP_ADDRESS, "");
 	const [, setAuth] = useLocalStorage(StorageKeys.PHILIPS.AUTH_TOKEN, "");
-	const [, clientkey] = useLocalStorage(StorageKeys.PHILIPS.CLIENT_KEY, "");
+	const [, setClientKey] = useLocalStorage(StorageKeys.PHILIPS.CLIENT_KEY, "");
+	const renderError = useError();
 
 	const mutation = useMutation(
 		() => {
@@ -80,6 +88,12 @@ function Philips() {
 				const values = json.pop();
 				setAuth(values.success.username);
 				setClientKey(values.success.clientkey);
+			},
+			onError: (error) => {
+				renderError({
+					title: "An error occurred trying to connect to Philips",
+					description: <Text>{JSON.stringify(error)}</Text>,
+				});
 			},
 		}
 	);

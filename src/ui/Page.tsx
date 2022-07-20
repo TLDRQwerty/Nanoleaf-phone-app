@@ -1,9 +1,10 @@
-import React, { isValidElement, ReactNode } from "react";
-import { Text, View, ScrollView } from "react-native";
+import React, { isValidElement, ReactNode, ComponentProps } from "react";
+import { Text, View, ScrollView, RefreshControlProps } from "react-native";
 import tw from "../tailwind";
 import { ArrowSmLeftIcon } from "react-native-heroicons/solid";
 import { Link } from "react-router-native";
 import ErrorBoundary from "./ErrorBoundary";
+import Modal from "./Modal";
 
 type Props = {
 	title: ReactNode;
@@ -11,7 +12,7 @@ type Props = {
 	headerLeft?: ReactNode;
 	headerRight?: ReactNode;
 	scrollable?: boolean;
-	refreshControl: any;
+	refreshControl?: React.ReactElement<RefreshControlProps>;
 };
 
 function Page({ title, children, headerLeft, headerRight, scrollable = false, refreshControl }: Props) {
@@ -47,4 +48,12 @@ function Page({ title, children, headerLeft, headerRight, scrollable = false, re
 	);
 }
 
-export default Page;
+function CustomModal({ onDismiss, onShow, visible, children, ...props }: Props & ComponentProps<typeof Modal>) {
+	return (
+		<Modal animationType="slide" onDismiss={onDismiss} onShow={onShow} visible={visible}>
+			<Page {...props}>{children}</Page>
+		</Modal>
+	);
+}
+
+export default Object.assign(Page, { Modal: CustomModal });
