@@ -189,11 +189,16 @@ function Group({ id }: { id: string }) {
 
   return (
     <View>
-      <Text>{group.name}</Text>
-      <Pressable.Power
-        onPress={() => mutation.mutate({ key: 'on', value: !group.action.on })}
-        value={group.action.on}
-      />
+      <View style={tw`flex-row justify-between`}>
+        <Text>{group.name}</Text>
+        <Pressable.Power
+          style={tw`w-20`}
+          onPress={() =>
+            mutation.mutate({ key: 'on', value: !group.action.on })
+          }
+          value={group.action.on}
+        />
+      </View>
       <Field label="Brightness" type="stacked">
         <Slider
           value={group.action.bri}
@@ -231,7 +236,9 @@ function Group({ id }: { id: string }) {
         />
       </Field>
       {group.lights.map((light) => (
-        <Light key={light} id={light} />
+        <View key={light} style={tw`pb-4`}>
+          <Light id={light} />
+        </View>
       ))}
     </View>
   );
@@ -272,11 +279,14 @@ function Light({ id }: { id: string }) {
 
   return (
     <View>
-      <Text>{light.name}</Text>
-      <Pressable.Power
-        onPress={() => mutation.mutate({ key: 'on', value: !light.state.on })}
-        value={light.state.on}
-      />
+      <View style={tw`flex-row justify-between`}>
+        <Text>{light.name}</Text>
+        <Pressable.Power
+          style={tw`w-20`}
+          onPress={() => mutation.mutate({ key: 'on', value: !light.state.on })}
+          value={light.state.on}
+        />
+      </View>
       <Field label="Brightness" type="stacked">
         <Slider
           value={light.state.bri}

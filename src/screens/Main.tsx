@@ -13,8 +13,10 @@ import Philips from '~/components/Philips';
 import Screen from '~/ui/Screen';
 import Card from '~/ui/Card';
 import tw from '~/tailwind';
+import { useNetInfo } from '@react-native-community/netinfo';
 
 export default function Main() {
+  const netinfo = useNetInfo();
   const navigation =
     useNavigation<
       CompositeNavigationProp<
@@ -30,6 +32,11 @@ export default function Main() {
         </Pressable>
       }
     >
+      {netinfo.type !== 'wifi' && (
+        <Card>
+          <Text>Not connected to the internet</Text>
+        </Card>
+      )}
       <Card>
         <Nanoleaf />
       </Card>
