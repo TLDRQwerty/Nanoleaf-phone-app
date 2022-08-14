@@ -33,8 +33,8 @@ export default function Main() {
       }
     >
       {netinfo.type !== 'wifi' && (
-        <Card>
-          <Text>Not connected to the internet</Text>
+        <Card style={tw`bg-rose-600 border-rose-800 border-4`}>
+          <Text style={tw`text-rose-50 font-bold text-center`}>Not connected to the internet</Text>
         </Card>
       )}
       <Card>

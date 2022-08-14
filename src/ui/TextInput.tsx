@@ -9,10 +9,10 @@ export default function TextInput({ style, ...rest }: Props) {
     <RNTextInput
       style={React.useMemo(
         () => [
-          tw`ml-4 flex-1 border border-gray-300 rounded-xl bg-white text-black`,
+          tw`px-2 flex-1 border border-gray-300 rounded-xl bg-white text-black`,
           style,
         ],
-        style,
+        [style],
       )}
       {...rest}
     />

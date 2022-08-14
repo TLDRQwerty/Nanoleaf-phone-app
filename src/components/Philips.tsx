@@ -5,6 +5,7 @@ import { useQuery } from '~/hooks/use-api';
 import useConnectionStore, { INTEGRATIONS } from '~/store/use-connection-store';
 import useIntegrationStore from '~/store/use-integration-store';
 import tw from '~/tailwind';
+import Chips from '~/ui/Chips';
 import Field from '~/ui/Field';
 import Pressable from '~/ui/Pressable';
 import Slider from '~/ui/Slider';
@@ -82,6 +83,22 @@ export type PhilipsResponse = {
     localtime: string;
     timezone: string;
   };
+  scenes: {
+    [id: string]: {
+      name: string;
+      type: unknown;
+      group: string;
+      lights: number[];
+      owner: string;
+      recycle: boolean;
+      locked: boolean;
+      appdata: unknown;
+      picture: string;
+      image: string;
+      lastupadted: number;
+      version: number;
+    };
+  };
 };
 
 interface Action {
@@ -94,6 +111,7 @@ interface Action {
   ct: number;
   select: string;
   colormode: string;
+  scene: string;
 }
 
 export default function Wrapper() {
@@ -197,6 +215,12 @@ function Group({ id }: { id: string }) {
             mutation.mutate({ key: 'on', value: !group.action.on })
           }
           value={group.action.on}
+        />
+      </View>
+      <View style={tw`pt-2`}>
+        <Scenes
+          onPress={(value) => mutation.mutate({ key: 'scene', value })}
+          value={group.action.scene}
         />
       </View>
       <Field label="Brightness" type="stacked">
@@ -324,5 +348,35 @@ function Light({ id }: { id: string }) {
         />
       </Field>
     </View>
+  );
+}
+
+function Scenes({
+  onPress,
+  value,
+}: {
+  onPress: (value: string) => void;
+  value: string;
+}) {
+  const [scenes, set] = useIntegrationStore((s) => [
+    s.philips?.scenes,
+    s.setPhilips,
+  ]);
+  const [ipAddress, authToken] = useConnectionStore((s) => [
+    s.philips.ip,
+    s.philips.authToken,
+  ]);
+  if (scenes == null) {
+    return null;
+  }
+
+  return (
+    <Chips horizontal scrollable options={Object.entries(scenes)} value={value}>
+      {([id, { name }]) => (
+        <Chips.Chip value={id} key={id} onPress={() => onPress(id)}>
+          <Text>{name}</Text>
+        </Chips.Chip>
+      )}
+    </Chips>
   );
 }

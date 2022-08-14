@@ -1,5 +1,8 @@
 import NetInfo from '@react-native-community/netinfo';
-import { NavigationContainer } from '@react-navigation/native';
+import {
+  NavigationContainer,
+  useNavigationContainerRef,
+} from '@react-navigation/native';
 import {
   focusManager,
   onlineManager,
@@ -21,6 +24,7 @@ const queryClient = new QueryClient({
 });
 
 function App() {
+  const containerRef = useNavigationContainerRef();
   useDeviceContext(tw);
   React.useEffect(() => {
     onlineManager.setEventListener((setOnline) => {
@@ -42,7 +46,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <NavigationContainer>
+      <NavigationContainer ref={containerRef}>
         <Navigations />
       </NavigationContainer>
     </QueryClientProvider>

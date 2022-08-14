@@ -89,7 +89,7 @@ export function Nanoleaf() {
   }
 
   return (
-    <View style={tw`flex-row`}>
+    <View style={tw`flex-row items-center`}>
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -99,12 +99,16 @@ export function Nanoleaf() {
               value={value || undefined}
               onBlur={onBlur}
               keyboardType="numeric"
+              style={tw`ml-2 roudned-r-none border-0`}
             />
           </Field>
         )}
         name="nanoleaf"
       />
-      <Pressable onPress={handleSubmit(mutation.mutate)}>
+      <Pressable
+        style={tw`rounded-l-none flex-1`}
+        onPress={handleSubmit(mutation.mutate)}
+      >
         <Text>{mutation.isLoading ? 'Loading...' : 'Connect'}</Text>
       </Pressable>
     </View>
@@ -171,7 +175,7 @@ function Philips() {
   }
 
   return (
-    <View style={tw`flex-row`}>
+    <View style={tw`flex-row items-center`}>
       <Controller
         control={control}
         render={({ field: { onChange, onBlur, value } }) => (
@@ -181,12 +185,16 @@ function Philips() {
               value={value}
               onBlur={onBlur}
               keyboardType="numeric"
+              style={tw`ml-2 rounded-r-none border-0`}
             />
           </Field>
         )}
         name="philips"
       />
-      <Pressable onPress={handleSubmit(mutation.mutate)}>
+      <Pressable
+        style={tw`rounded-l-none flex-1`}
+        onPress={handleSubmit(mutation.mutate)}
+      >
         <Text>{mutation.isLoading ? 'Loading...' : 'Connect'}</Text>
       </Pressable>
     </View>

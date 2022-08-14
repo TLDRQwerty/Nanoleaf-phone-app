@@ -109,11 +109,11 @@ function Nanoleaf() {
 
   return (
     <View>
-      <View>
+      <View style={tw`flex-row justify-between`}>
         <Text>{data.name}</Text>
         <Power />
       </View>
-      <View>
+      <View style={tw`pt-2`}>
         <Effects />
       </View>
       <View>
@@ -159,6 +159,7 @@ function Power() {
 
   return (
     <Pressable.Power
+      style={tw`w-20`}
       onPress={() => mutation.mutate(nanoleaf.state.on.value)}
       value={nanoleaf.state.on.value}
     />
@@ -237,20 +238,17 @@ function Effects() {
     return null;
   }
   return (
-    <View>
-      <Text>{effects.select}</Text>
-      <Chips
-        horizontal
-        options={effects.effectsList}
-        value={effects.select}
-        scrollable
-      >
-        {(v) => (
-          <Chips.Chip key={v} onPress={(v) => mutation.mutate(v)} value={v}>
-            <Text>{v}</Text>
-          </Chips.Chip>
-        )}
-      </Chips>
-    </View>
+    <Chips
+      horizontal
+      options={effects.effectsList}
+      value={effects.select}
+      scrollable
+    >
+      {(v) => (
+        <Chips.Chip key={v} onPress={(v) => mutation.mutate(v)} value={v}>
+          <Text>{v}</Text>
+        </Chips.Chip>
+      )}
+    </Chips>
   );
 }

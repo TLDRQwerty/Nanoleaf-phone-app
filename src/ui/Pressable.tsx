@@ -1,22 +1,71 @@
-import React from 'react';
-import { Pressable as RNPressable, PressableProps } from 'react-native';
+import React, { ReactNode } from 'react';
+import {
+  Pressable as RNPressable,
+  PressableProps,
+  GestureResponderEvent,
+} from 'react-native';
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+} from 'react-native-reanimated';
 import tw from '~/tailwind';
 import Text from './Text';
 
 interface Props extends Omit<PressableProps, 'style'> {
   style?: null | object;
+  children?: ReactNode;
 }
 
-function Pressable({ children, style, ...rest }: Props) {
+function Pressable({
+  children,
+  style,
+  onPress,
+  onPressIn,
+  onPressOut,
+  onLongPress,
+  ...rest
+}: Props) {
+  const value = useSharedValue(1);
+
+  const animatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: value.value,
+    };
+  });
+
+  const handlePressIn = (e: GestureResponderEvent) => {
+    value.value = 0.3;
+    if (onPressIn) {
+      onPressIn(e);
+    }
+  };
+  const handlePressOut = (e: GestureResponderEvent) => {
+    value.value = 1;
+    if (onPressOut) {
+      onPressOut(e);
+    }
+  };
+
   return (
     <RNPressable
-      style={tw.style(
-        `bg-gray-200 items-center justify-center p-2 rounded-xl flex-row`,
-        style,
-      )}
       {...rest}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
+      onPress={onPress}
+      onLongPress={onLongPress}
     >
-      {children}
+      <Animated.View
+        style={React.useMemo(
+          () => [
+            tw`bg-gray-200 items-center justify-center p-2 rounded-xl`,
+            animatedStyle,
+            style,
+          ],
+          [animatedStyle, style],
+        )}
+      >
+        {children}
+      </Animated.View>
     </RNPressable>
   );
 }
