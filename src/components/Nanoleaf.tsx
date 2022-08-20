@@ -9,6 +9,7 @@ import Chips from '~/ui/Chips';
 import Field from '~/ui/Field';
 import Pressable from '~/ui/Pressable';
 import Slider from '~/ui/Slider';
+import Switch from '~/ui/Switch';
 import Text from '~/ui/Text';
 
 type Value = {
@@ -97,9 +98,6 @@ function Nanoleaf() {
           return i;
         });
       },
-      onError: (err) => {
-        console.log({ err });
-      },
     },
   );
 
@@ -144,11 +142,14 @@ function Power() {
       });
     },
     {
-      onSuccess: (data, variables) => {
+      onMutate: (variable) => {
         setNanoleaf((i) => {
           if (i == null) return;
-          i.state.on.value = !variables;
+          i.state.on.value = !variable;
         });
+      },
+      onError: (e, variable) => {
+        throw Error(e);
       },
     },
   );
@@ -158,9 +159,8 @@ function Power() {
   }
 
   return (
-    <Pressable.Power
-      style={tw`w-20`}
-      onPress={() => mutation.mutate(nanoleaf.state.on.value)}
+    <Switch
+      onChange={() => mutation.mutate(nanoleaf.state.on.value)}
       value={nanoleaf.state.on.value}
     />
   );
@@ -184,7 +184,14 @@ function GenericSlider({ label, type }: { label: string; type: string }) {
       });
     },
     {
-      onSuccess: (_, variables) => {
+      onMutate: (variables) => {
+        setNanoleaf((i) => {
+          if (i == null) return;
+          i.state[type].value = variables;
+        });
+      },
+      onError: (error, variables) => {
+        console.log(error);
         setNanoleaf((i) => {
           if (i == null) return;
           i.state[type].value = variables;
@@ -226,11 +233,14 @@ function Effects() {
       });
     },
     {
-      onSuccess: (_, variables) => {
+      onMutate: (variables) => {
         setNanoleaf((i) => {
           if (i == null) return;
           i.effects.select = variables;
         });
+      },
+      onError: (e, variables) => {
+        throw Error(e);
       },
     },
   );

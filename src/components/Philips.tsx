@@ -9,6 +9,7 @@ import Chips from '~/ui/Chips';
 import Field from '~/ui/Field';
 import Pressable from '~/ui/Pressable';
 import Slider from '~/ui/Slider';
+import Switch from '~/ui/Switch';
 import Text from '~/ui/Text';
 
 export type PhilipsResponse = {
@@ -189,10 +190,13 @@ function Group({ id }: { id: string }) {
         );
       },
       {
-        onSuccess: (_, { key, value }) => {
+        onMutate: ({ key, value }) => {
           set((i) => {
             i.groups[id].action[key] = value;
           });
+        },
+        onError: (e) => {
+          throw Error(e);
         },
       },
     ))();
@@ -209,12 +213,11 @@ function Group({ id }: { id: string }) {
     <View>
       <View style={tw`flex-row justify-between`}>
         <Text>{group.name}</Text>
-        <Pressable.Power
-          style={tw`w-20`}
-          onPress={() =>
-            mutation.mutate({ key: 'on', value: !group.action.on })
-          }
+        <Switch
           value={group.action.on}
+          onChange={() => {
+            mutation.mutate({ key: 'on', value: !group.action.on });
+          }}
         />
       </View>
       <View style={tw`pt-2`}>
@@ -289,10 +292,13 @@ function Light({ id }: { id: string }) {
         );
       },
       {
-        onSuccess: (_, { key, value }) => {
+        onMutate: ({ key, value }) => {
           set((i) => {
             i.lights[id].state[key] = value;
           });
+        },
+        onError: (e) => {
+          throw Error(e);
         },
       },
     ))();
@@ -305,10 +311,11 @@ function Light({ id }: { id: string }) {
     <View>
       <View style={tw`flex-row justify-between`}>
         <Text>{light.name}</Text>
-        <Pressable.Power
-          style={tw`w-20`}
-          onPress={() => mutation.mutate({ key: 'on', value: !light.state.on })}
+        <Switch
           value={light.state.on}
+          onChange={() =>
+            mutation.mutate({ key: 'on', value: !light.state.on })
+          }
         />
       </View>
       <Field label="Brightness" type="stacked">
