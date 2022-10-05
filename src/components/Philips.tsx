@@ -212,7 +212,7 @@ function Group({ id }: { id: string }) {
   return (
     <View>
       <View style={tw`flex-row justify-between`}>
-        <Text>{group.name}</Text>
+        <Text style={tw`font-bold text-xl`}>{group.name}</Text>
         <Switch
           value={group.action.on}
           onChange={() => {
@@ -310,7 +310,7 @@ function Light({ id }: { id: string }) {
   return (
     <View>
       <View style={tw`flex-row justify-between`}>
-        <Text>{light.name}</Text>
+        <Text style={tw`font-bold text-lg`}>{light.name}</Text>
         <Switch
           value={light.state.on}
           onChange={() =>

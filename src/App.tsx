@@ -9,6 +9,7 @@ import {
   QueryClient,
   QueryClientProvider,
 } from '@tanstack/react-query';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import React from 'react';
 import { useDeviceContext } from 'twrnc';
 import { Platform, AppState } from 'react-native';
@@ -45,11 +46,13 @@ function App() {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <NavigationContainer ref={containerRef}>
-        <Navigations />
-      </NavigationContainer>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={tw`flex-1`}>
+      <QueryClientProvider client={queryClient}>
+        <NavigationContainer ref={containerRef}>
+          <Navigations />
+        </NavigationContainer>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }
 

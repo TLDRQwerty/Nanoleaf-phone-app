@@ -10,7 +10,10 @@ export default function Card({ children, style }: Props) {
   return (
     <View
       style={React.useMemo(
-        () => [tw`p-4 m-2 rounded-lg bg-gray-400/25 border-gray-400 border-4`, style],
+        () => [
+          tw`p-4 m-2 rounded-lg bg-gray-400/25 border-gray-400 border-4`,
+          style,
+        ],
         [style],
       )}
     >

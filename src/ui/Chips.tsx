@@ -13,12 +13,16 @@ const useStore = create<{
   setSelected: (selected) => set({ selected }),
 }));
 
+type AdditionalProps<Scrollable> = Scrollable extends true
+  ? ScrollViewProps
+  : ViewProps;
+
 type Props<Scrollable extends boolean, Item> = {
   value: Item;
   options: Item[];
   children: (v: Item) => ReactNode;
   scrollable: Scrollable;
-};
+} & Omit<AdditionalProps<Scrollable>, 'children'>;
 
 function Chips<Scrollable extends boolean, Item>({
   value,

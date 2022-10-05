@@ -15,9 +15,9 @@
     "target": "esnext",
     "skipLibCheck": true,
     "moduleSuffixes": [".ios", ".native", ""],
-		"baseUrl": "./",
-		"paths": {
-			"~/*": ["src/*"],
-		},
+    "baseUrl": "./",
+    "paths": {
+      "~/*": ["src/*"],
+    },
   }
 }

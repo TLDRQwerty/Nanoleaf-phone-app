@@ -92,9 +92,9 @@ function Nanoleaf() {
     INTEGRATIONS.NANOLEAF,
     '',
     {
-      onSuccess: (data) => {
+      onSuccess: (d) => {
         setNanoleaf((i) => {
-          i = data;
+          i = d;
           return i;
         });
       },
@@ -108,7 +108,7 @@ function Nanoleaf() {
   return (
     <View>
       <View style={tw`flex-row justify-between`}>
-        <Text>{data.name}</Text>
+        <Text style={tw`font-bold text-xl`}>{data.name}</Text>
         <Power />
       </View>
       <View style={tw`pt-2`}>
@@ -148,7 +148,7 @@ function Power() {
           i.state.on.value = !variable;
         });
       },
-      onError: (e, variable) => {
+      onError: (e) => {
         throw Error(e);
       },
     },
@@ -191,7 +191,6 @@ function GenericSlider({ label, type }: { label: string; type: string }) {
         });
       },
       onError: (error, variables) => {
-        console.log(error);
         setNanoleaf((i) => {
           if (i == null) return;
           i.state[type].value = variables;
@@ -240,7 +239,9 @@ function Effects() {
         });
       },
       onError: (e, variables) => {
-        throw Error(e);
+        if (e instanceof Error) {
+          throw e;
+        }
       },
     },
   );
@@ -255,7 +256,7 @@ function Effects() {
       scrollable
     >
       {(v) => (
-        <Chips.Chip key={v} onPress={(v) => mutation.mutate(v)} value={v}>
+        <Chips.Chip key={v} onPress={mutation.mutate} value={v}>
           <Text>{v}</Text>
         </Chips.Chip>
       )}
